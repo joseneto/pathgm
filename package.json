@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
-    "build": "tsc",
+    "start": "npx prisma migrate deploy && node dist/index.js",
+    "build": "tsc && npx prisma generate",
     "clean": "rm -rf dist",
     "dev:bot": "ts-node-dev --respawn src/index.ts",
     "test": "jest",
@@ -14,7 +14,10 @@
     "test:integration": "jest --testPathPattern=integration",
     "test:critical": "jest --testPathPattern=integration --verbose",
     "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix"
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "db:migrate": "npx prisma migrate deploy",
+    "db:generate": "npx prisma generate",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",

@@ -1,0 +1,52 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build outputs
+dist
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+DEPLOY.md
+docs
+
+# Test files
+src/tests
+coverage
+*.test.ts
+*.spec.ts
+
+# Development files
+.eslintrc.js
+jest.config.ts
+tsconfig.test.json
+
+# Logs
+logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

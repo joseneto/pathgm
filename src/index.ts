@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv'
+import * as http from 'http'
 
 // Load .env file if exists (development fallback)
 // In production, use system environment variables (Vercel, Railway, etc.)
@@ -56,6 +57,22 @@ async function main() {
   })
 
   bot.launch()
+
+  // Health check server for Railway
+  const port = process.env.PORT || 3000
+  const server = http.createServer((req, res) => {
+    if (req.url === '/health') {
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ status: 'OK', timestamp: new Date().toISOString() }))
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' })
+      res.end('Not Found')
+    }
+  })
+
+  server.listen(port, () => {
+    console.log(`Health check server running on port ${port}`)
+  })
 }
 
 main()
