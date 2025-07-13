@@ -31,7 +31,7 @@ export class PlayerCleanupService {
     this.cronJob = cron.schedule('0 2 * * *', async () => {
       await this.cleanupInactivePlayers();
     }, {
-      timezone: 'UTC'
+      timezone: 'UTC',
     });
 
     console.log('Player cleanup cron job started (runs daily at 2 AM UTC)');
@@ -64,8 +64,8 @@ export class PlayerCleanupService {
         const inactivePlayers = await prisma.player.findMany({
           where: {
             updatedAt: {
-              lt: sixMonthsAgo
-            }
+              lt: sixMonthsAgo,
+            },
           },
           select: {
             id: true,
@@ -75,10 +75,10 @@ export class PlayerCleanupService {
             user: {
               select: {
                 telegramId: true,
-                name: true
-              }
-            }
-          }
+                name: true,
+              },
+            },
+          },
         });
 
         if (inactivePlayers.length === 0) {
@@ -96,14 +96,14 @@ export class PlayerCleanupService {
         const deleteResult = await prisma.player.deleteMany({
           where: {
             updatedAt: {
-              lt: sixMonthsAgo
-            }
-          }
+              lt: sixMonthsAgo,
+            },
+          },
         });
 
         return {
           deletedCount: deleteResult.count,
-          players: inactivePlayers
+          players: inactivePlayers,
         };
       });
 
