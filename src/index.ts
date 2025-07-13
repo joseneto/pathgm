@@ -24,6 +24,7 @@ import { editPlayerCommand } from './commands/editPlayer'
 import { listPlayersCommand } from './commands/listPlayers'
 import { aboutCommand } from './commands/about'
 import { helpCommand } from './commands/help'
+import { PlayerCleanupService } from './services/playerCleanup'
 
 async function main() {
   await initI18n()
@@ -57,6 +58,10 @@ async function main() {
   })
 
   bot.launch()
+
+  // Start player cleanup cron job
+  const cleanupService = PlayerCleanupService.getInstance()
+  cleanupService.start()
 
   // Health check server for Railway
   const port = process.env.PORT || 3000
