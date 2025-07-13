@@ -213,5 +213,6 @@
   "tip_track_character_progression": "Acompanhe a progressão do personagem ao longo do tempo",
   "tip_use_role_tags": "Use tags de função para organizar a composição do grupo",
   "cleardata_menu_prompt": "🗑️ Limpeza de Dados dos Jogadores",
-  "cleardata_instructions": "⚠️ <b>Atenção:</b> Esta ação removerá permanentemente todos os seus personagens cadastrados.\n\n📋 <b>O que será removido:</b>\n• Todos os personagens importados\n• Todos os personagens criados manualmente\n• Dados de níveis, perícias e estatísticas\n• Conexões com Pathbuilder\n\n🔒 <b>O que NÃO será removido:</b>\n• Seu perfil de usuário\n• Configurações do bot\n\n⚠️ Esta ação não pode ser desfeita!"
+  "cleardata_instructions": "⚠️ <b>Atenção:</b> Esta ação removerá permanentemente todos os seus personagens cadastrados.\n\n📋 <b>O que será removido:</b>\n• Todos os personagens importados\n• Todos os personagens criados manualmente\n• Dados de níveis, perícias e estatísticas\n• Conexões com Pathbuilder\n\n🔒 <b>O que NÃO será removido:</b>\n• Seu perfil de usuário\n• Configurações do bot\n\n⚠️ Esta ação não pode ser desfeita!",
+  "try_listplayers_help": "Use /listplayers -h para ver opções de filtro"
 }
