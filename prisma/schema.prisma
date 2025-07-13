@@ -1,0 +1,963 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  telegramId   String     @unique @map("telegram_id")
+  name         String
+  email        String?    // Email real do usuário, opcional
+  type         UserType
+  
+  // Background Jobs Control
+  maxConcurrentJobs Int    @default(1) @map("max_concurrent_jobs") // Default: 1, World Lords: 2
+  
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  npcs         Npc[]
+  notes        Note[]
+  encounters   Encounter[]
+  plots        Plot[]
+  items        Item[]
+  regions      Region[]
+  places       Place[]
+  events       Event[]
+  players      Player[]
+  
+  // Monetization relations
+  subscriptions       UserSubscription[]
+  creditBalance       CreditBalance?
+  creditPurchases     CreditPurchase[]
+  creditTransactions CreditTransaction[]
+  subscriptionLogs    SubscriptionLog[]
+  
+  // Background Jobs relations
+  backgroundJobs      BackgroundJob[]
+  dungeons            Dungeon[]
+  
+  // Bestiary relations
+  bestiaryCreatures   Bestiary[]
+  
+  @@map("users")
+}
+
+model NpcRelationship {
+  id               String   @id @default(cuid())
+  sourceNpcId      String   @map("source_npc_id")
+  targetNpcId      String   @map("target_npc_id")
+  relationshipType String   @map("relationship_type") // 'ally', 'rival', 'family', 'colleague', 'enemy'
+  description      String
+  strength         Int      // 1-5
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  
+  // Relacionamentos
+  sourceNpc Npc @relation("SourceRelationships", fields: [sourceNpcId], references: [id], onDelete: Cascade)
+  targetNpc Npc @relation("TargetRelationships", fields: [targetNpcId], references: [id], onDelete: Cascade)
+  
+  // Índices
+  @@unique([sourceNpcId, targetNpcId])
+  @@index([sourceNpcId])
+  @@index([targetNpcId])
+  @@map("npc_relationships")
+}
+
+model Npc {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  placeId     String?  @map("place_id")
+  name        String
+  occupation  String
+  personality String
+  secret      String
+  npcType     String   @map("npc_type") // 'friendly' | 'enemy' | 'neutral'
+  importance  String   // 'common' | 'important'
+  level       Int      // 1-20
+  ancestry    String   // Human, Elf, Dwarf, etc.
+  basicStats  Json?    @map("basic_stats") // {perception: 12, diplomacy: 8}
+
+  // AutoTags - array JSON com tags automáticas
+  autoTags    String[] @map("auto_tags") // ["mago", "corrupto", "humano", "alto-nivel"]
+  
+  // Metadata field for contextual enhancements
+  metadata    Json?    // Store contextual notes, enhancement history, etc.
+
+  // Sharing and audio fields
+  url         String?  // Public sharing URL slug
+  urlAudio    String?  @map("url_audio") // Audio narration file path
+  isPublic    Boolean  @default(false) @map("is_public") // Public sharing enabled
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  place Place? @relation(fields: [placeId], references: [id], onDelete: SetNull)
+  
+  // Relacionamentos bidirecionais
+  sourceRelationships NpcRelationship[] @relation("SourceRelationships")
+  targetRelationships NpcRelationship[] @relation("TargetRelationships")
+  
+  // Índices compostos otimizados (sempre com userId primeiro)
+  @@index([userId])
+  @@index([autoTags], type: Gin)
+  @@index([userId, npcType])
+  @@index([userId, placeId])
+  @@index([userId, level])
+  @@index([userId, ancestry])
+  @@index([userId, importance])
+  @@index([userId, updatedAt])
+  @@unique([url]) // Unique constraint for public sharing URLs
+  @@map("npcs")
+}
+
+model Region {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  name          String
+  type          String   @default("kingdom") // 'kingdom', 'wilderness', 'plane', 'continent', 'underworld'
+  description   String
+  climate       String?
+  threatLevel   Int      @default(2) @map("threat_level") // 1-5
+  autoTags      String[] @map("auto_tags") // Auto-generated tags
+  
+  // AI generated content - NOW JSON
+  rulers          Json     // [{ name, title, description }]
+  majorThreats    Json     @map("major_threats") // [{ name, description }]
+  notableFeatures Json     @map("notable_features") // [{ name, description }]
+  culture         String?
+  
+  // Enhanced mechanical fields (PF2e rules)
+  population          Int?    // Regional population count
+  economicLevel       String? @map("economic_level") // 'impoverished', 'poor', 'modest', 'prosperous', 'wealthy'
+  size                Int?    // Size in square miles
+  modifiers           Json?   // { economy, stability, military, magic, culture, influence } (1-5 each)
+  maxSettlementLevel  Int?    @map("max_settlement_level") // Maximum settlement level allowed (0-15)
+  tradeConnectivity   Int?    @map("trade_connectivity") // Trade route connectivity (0-5)
+  
+  // Sharing and audio fields
+  url         String?  // Public sharing URL slug
+  urlAudio    String?  @map("url_audio") // Audio narration file path
+  isPublic    Boolean  @default(false) @map("is_public") // Public sharing enabled
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  places Place[] // Opposite relation to Place.region
+
+  // Indexes
+  @@index([userId])
+  @@index([userId, type])
+  @@index([autoTags], type: Gin)
+  @@unique([url]) // Unique constraint for public sharing URLs
+  @@map("regions")
+}
+
+model Place {
+  id            String   @id @default(cuid())
+  userId        String
+  regionId      String?  // Optional - places can exist without regions
+  name          String
+  type          String   // 'city', 'town', 'village', 'dungeon', 'fortress', etc.
+  description   String
+  autoTags      String[] // Auto-generated tags
+  
+  // Flexible metadata for different place types
+  metadata      Json?    // {population: 5000, wealth: 4, levels: 3, danger: 2}
+  
+  // AI generated rich content´
+  notableLocations Json?  // [{name: "Town Hall", description: "..."}]
+  rumors           Json?  // [{hook: "Strange lights", details: "..."}]
+  threats          String[] @default([])
+  resources        String[] @default([])
+  
+  // Contextual AI content for relationships
+  regionContext    String?  // AI-generated context describing how this place fits in its region
+  
+  // Enhanced PF2e settlement mechanics (for settlement types)
+  level               Int?     // Settlement level (0-15) for PF2e mechanics
+  category            String?  // Settlement category (thorp, village, city, etc.)
+  population          Int?     // Exact population count
+  governmentType      String?  @map("government_type") // Systematic government type
+  modifiers           Json?    // Settlement modifiers: {economy, law, lore, society, crime, corruption}
+  qualities           String[] @default([]) // Special settlement qualities
+  availableItemLevel  Int?     @map("available_item_level") // Max item level available
+  services            String[] @default([]) // Available services
+  
+  // Sharing and audio fields
+  url         String?  // Public sharing URL slug
+  urlAudio    String?  @map("url_audio") // Audio narration file path
+  isPublic    Boolean  @default(false) @map("is_public") // Public sharing enabled
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  region Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  npcs   Npc[]
+  items  Item[] // Opposite relation to Item.place
+  plots  Plot[] // Opposite relation to Plot.place
+  encounters Encounter[] // Opposite relation to Encounter.place
+  events Event[] // Events that happen in this place
+  dungeons Dungeon[] // Dungeons generated for this place
+
+  // Indexes
+  @@index([userId])
+  @@index([regionId])
+  @@index([userId, type])
+  @@index([autoTags], type: Gin)
+  @@unique([url]) // Unique constraint for public sharing URLs
+  @@map("places")
+}
+
+model Encounter {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  placeId     String?  @map("place_id")      // ✅ NEW: --in parameter
+  plotId      String?  @map("plot_id")       // ✅ NEW: --for-plot parameter
+  title       String
+  description String
+  level       Int      // 1-25
+  terrain     String   // forest, cave, city, etc.
+  difficulty  String   // trivial, low, moderate, severe, extreme
+
+  plotContext     Json?  @map("plot_context")      // Plot context only (encounters can be part of plots)
+
+  // AutoTags para encounters
+  autoTags    String[] @map("auto_tags") // ["boss", "underdark", "magic", "alto-nivel"]
+
+  // Dados do encontro
+  enemies     Json     // Array de inimigos
+  
+  // Metadata field for contextual enhancements
+  metadata    Json?    // Store contextual notes, enhancement history, etc.
+  
+  // Sharing and audio fields
+  url         String?  // Public sharing URL slug
+  urlAudio    String?  @map("url_audio") // Audio narration file path
+  isPublic    Boolean  @default(false) @map("is_public") // Public sharing enabled
+  
+  place Place? @relation(fields: [placeId], references: [id], onDelete: SetNull)  // ✅ NEW
+  plot  Plot?  @relation(fields: [plotId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Índices compostos para encounters
+  @@index([userId])
+  @@index([autoTags], type: Gin)
+  @@index([userId, level])
+  @@index([userId, terrain])
+  @@index([userId, difficulty])
+  @@index([userId, updatedAt])
+  @@index([userId, placeId])           // ✅ NEW
+  @@index([userId, plotId])            // ✅ NEW
+  @@unique([url]) // Unique constraint for public sharing URLs
+  @@map("encounters")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  placeId     String?  @map("place_id")
+  plotId      String?  @map("plot_id")
+  title       String
+  description String
+  objective   String   // What the characters need to accomplish in this event
+  type        String   // obstacle, social, exploration, puzzle, trap, environmental, mystery
+  difficulty  String   // trivial, easy, moderate, hard, extreme
+  level       Int      // 1-25
+
+  plotContext     Json?  @map("plot_context")      // Plot context only (items can be part of plots)
+
+  // Skill checks and mechanics
+  primarySkillCheck     Json     @map("primary_skill_check")    // {skill, dc, description, successOutcome, failureOutcome}
+  secondarySkillChecks  Json?    @map("secondary_skill_checks") // Array of additional skill checks
+  escalation           Json?     @map("escalation")             // {trigger, description, consequence}
+
+  // Outcomes
+  failureConsequences  String[] @map("failure_consequences")
+
+  // AutoTags para events
+  autoTags    String[] @map("auto_tags")
+
+  // Metadata field for contextual enhancements
+  metadata    Json?    // Store contextual notes, enhancement history, etc.
+
+  // Sharing and audio fields
+  url         String?  // Public sharing URL slug
+  urlAudio    String?  @map("url_audio") // Audio narration file path
+  isPublic    Boolean  @default(false) @map("is_public") // Public sharing enabled
+
+  place Place? @relation(fields: [placeId], references: [id], onDelete: SetNull)
+  plot  Plot?  @relation(fields: [plotId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Índices compostos para events
+  @@index([userId])
+  @@index([autoTags], type: Gin)
+  @@index([userId, type])
+  @@index([userId, difficulty])
+  @@index([userId, level])
+  @@index([userId, updatedAt])
+  @@index([userId, placeId])
+  @@index([userId, plotId])
+  @@unique([url]) // Unique constraint for public sharing URLs
+  @@map("events")
+}
+
+model Plot {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  theme       String?
+  difficulty  String?  @map("difficulty")
+  itemId      String?  @unique @map("item_id")       // Plot criado PARA item específico (1:1)
+  placeId     String?  @map("place_id")
+  title       String
+  hook        String
+  twist       String
+
+  autoTags    String[] @map("auto_tags")
+  suggestedNpcs Json   @map("suggested_npcs")
+  
+  // No placeContext needed - plots created with --in "Place" integrate place context directly in generation
+  // Metadata field for contextual enhancements
+  metadata    Json?    // Store contextual notes, enhancement history, etc.
+
+  // Sharing and audio fields
+  url         String?  // Public sharing URL slug
+  urlAudio    String?  @map("url_audio") // Audio narration file path
+  isPublic    Boolean  @default(false) @map("is_public") // Public sharing enabled
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceItem Item? @relation("PlotForItem", fields: [itemId], references: [id], onDelete: SetNull)  // Plot criado PARA este item
+  place Place? @relation(fields: [placeId], references: [id], onDelete: SetNull)
+  items Item[] @relation("PlotItems")  // Itens que fazem PARTE deste plot
+  encounters Encounter[] // Opposite relation to Encounter.plot
+  events Event[] // Events connected to this plot
+
+  @@index([userId])
+  @@index([autoTags], type: Gin)
+  @@index([userId, updatedAt])
+  @@index([difficulty])
+  @@index([itemId])
+  @@index([placeId])
+  @@unique([url]) // Unique constraint for public sharing URLs
+  @@map("plots")
+}
+
+model Item {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  name        String
+  type        String
+  level       Int
+  rarity      String
+  description String
+  effects     Json
+  
+  placeId         String?  @map("place_id")
+  plotId          String?  @map("plot_id")              // Item faz PARTE deste plot
+  plotContext     Json?    @map("plot_context")         // Plot context only (items can be part of plots)
+  
+  autoTags    String[] @map("auto_tags")
+  
+  // Metadata field for contextual enhancements
+  metadata    Json?    // Store contextual notes, enhancement history, etc.
+  
+  // Sharing and audio fields
+  url         String?  // Public sharing URL slug
+  urlAudio    String?  @map("url_audio") // Audio narration file path
+  isPublic    Boolean  @default(false) @map("is_public") // Public sharing enabled
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  place Place? @relation(fields: [placeId], references: [id], onDelete: SetNull)
+  plot  Plot?  @relation("PlotItems", fields: [plotId], references: [id], onDelete: SetNull)  // Item faz PARTE do plot
+  plotsForThisItem Plot[] @relation("PlotForItem")  // Plots criados PARA este item
+  
+  @@index([userId])
+  @@index([autoTags], type: Gin)
+  @@index([userId, type])
+  @@index([userId, level])
+  @@index([userId, rarity])
+  @@index([userId, updatedAt])
+  @@index([userId, placeId])
+  @@index([userId, plotId])
+  @@unique([url]) // Unique constraint for public sharing URLs
+  @@map("items")
+}
+
+
+model Note {
+  id            String   @id @default(cuid())
+  title         String
+  content       String
+  noteType      String   @default("general") @map("note_type") // 'general', 'session', 'summary'
+  sessionNumber Int?     @map("session_number") // For session notes
+  createdAt     DateTime @default(now()) @map("created_at")
+  userId        String   @map("user_id")
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  @@index([userId, noteType])
+  @@index([userId, sessionNumber])
+  @@map("notes")
+}
+
+model Player {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  pathbuilderId  String?  @map("pathbuilder_id")
+  metadata       Json     @default("{}")
+  name           String
+  alias          String
+  className      String   @map("class_name")
+  level          Int
+
+  perception     Int
+  fortitude      Int
+  reflex         Int
+  will           Int
+  skills         Json
+
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pathbuilderId])
+  @@index([userId])
+  @@map("players")
+}
+
+
+
+
+enum UserType {
+  PRIVATE
+  GROUP
+}
+
+// ================================
+// MONETIZATION SYSTEM - New Models
+// ================================
+
+model SubscriptionPlan {
+  id                 String   @id @default(cuid())
+  name               String   @unique // 'free', 'basic', 'master', 'business'
+  displayName        String   // 'Free', 'Básico', 'Master', 'Business'
+  price              Float    // Monthly price in USD
+  creditsPerMonth     Int     @default(0) @map("credits_per_month") // Unified credits pool
+  features           Json     // Array of features
+  isActive           Boolean  @default(true) @map("is_active")
+  
+  // Stripe integration
+  stripeProductId    String?  @map("stripe_product_id") // Stripe Product ID
+  stripePriceId      String?  @map("stripe_price_id")   // Stripe Price ID for checkout
+  
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  subscriptions UserSubscription[]
+  
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id                    String   @id @default(cuid())
+  userId                String   @map("user_id")
+  planId                String   @map("plan_id")
+  
+  // Subscription status
+  status                SubscriptionStatus @default(ACTIVE)
+  stripeSubscriptionId  String?  @unique @map("stripe_subscription_id")
+  stripeSubscriptionItemId String? @map("stripe_subscription_item_id") // For plan upgrades
+  stripeCustomerId      String?  @map("stripe_customer_id")
+  
+  // Billing cycle
+  currentPeriodStart    DateTime @map("current_period_start")
+  currentPeriodEnd      DateTime @map("current_period_end")
+  nextBillingDate       DateTime? @map("next_billing_date")
+  
+  // Credit tracking for current period
+  creditsUsed           Int      @default(0) @map("credits_used") // Unified credits used
+  monthCreditsUsed      Int      @default(0) @map("month_credits_used") // Permanent monthy credits
+  lastDailyReset        DateTime? @map("last_daily_reset") // For apprentice plan daily limits
+  
+  // Unlimited access flags (admin granted)
+  unlimitedCreditsUntil DateTime? @map("unlimited_credits_until") // Unified unlimited access
+  
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+  subscriptionLogs SubscriptionLog[]
+  
+  @@unique([userId, status], name: "unique_active_subscription", map: "user_subscriptions_user_id_status_key")
+  @@index([userId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@map("user_subscriptions")
+}
+
+model CreditBalance {
+  id                    String   @id @default(cuid())
+  userId                String   @unique @map("user_id")
+
+  purchasedCredits      Int      @default(0) @map("purchased_credits") // Unified purchased credits
+  totalPurchased        Int      @default(0) @map("total_purchased") // Unified lifetime total
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("credit_balances")
+}
+
+model CreditPackage {
+  id            String      @id @default(cuid())
+  name          String      @unique // 'text_100', 'audio_20', etc.
+  displayName   String      // 'Pacote Texto 100', '20 Créditos Áudio'
+  creditAmount  Int         @map("credit_amount")
+  price         Float       // Price in USD
+  currency      String      @default("USD")
+  isActive      Boolean     @default(true) @map("is_active")
+  sortOrder     Int         @default(0) @map("sort_order") // For display ordering
+  
+  // Stripe integration
+  stripeProductId String?   @map("stripe_product_id") // Stripe Product ID
+  stripePriceId   String?   @map("stripe_price_id")   // Stripe Price ID for checkout
+  
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  purchases CreditPurchase[]
+  
+  @@index([isActive])
+  @@map("credit_packages")
+}
+
+model SubscriptionLog {
+  id                    String                @id @default(cuid())
+  userId                String                @map("user_id")
+  subscriptionId        String                @map("subscription_id")
+  
+  // Log details
+  changeType            SubscriptionChangeType @map("change_type")
+  description           String                // Human readable description
+  
+  // Plan change details
+  oldPlanName           String?               @map("old_plan_name")
+  newPlanName           String?               @map("new_plan_name")
+  oldPlanPrice          Float?                @map("old_plan_price")
+  newPlanPrice          Float?                @map("new_plan_price")
+  oldCreditsPerMonth    Int?                  @map("old_credits_per_month")
+  newCreditsPerMonth    Int?                  @map("new_credits_per_month")
+  
+  // Credit usage context at time of change
+  creditsUsedBefore     Int?                  @map("credits_used_before")
+  creditsUsedAfter      Int?                  @map("credits_used_after")
+  creditsRemainingBefore Int?                 @map("credits_remaining_before")
+  creditsRemainingAfter Int?                  @map("credits_remaining_after")
+  
+  // Change context
+  triggeredBy           SubscriptionTrigger   @map("triggered_by") // USER, ADMIN, STRIPE_WEBHOOK, etc.
+  triggeredByUserId     String?               @map("triggered_by_user_id") // Admin user who made change
+  stripeEventType       String?               @map("stripe_event_type") // If triggered by Stripe
+  
+  // Additional metadata
+  metadata              Json?                 // Additional context data
+  
+  createdAt             DateTime              @default(now()) @map("created_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription UserSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([subscriptionId, createdAt(sort: Desc)])
+  @@index([changeType])
+  @@index([triggeredBy])
+  @@map("subscription_logs")
+}
+
+model CreditPurchase {
+  id                    String          @id @default(cuid())
+  userId                String          @map("user_id")
+  packageId             String          @map("package_id")
+  
+  // Purchase details
+  creditAmount          Int             @map("credit_amount")
+  price                 Float
+  currency              String          @default("USD")
+  status                PurchaseStatus  @default(PENDING)
+  
+  // Stripe integration
+  stripePaymentIntentId String?         @unique @map("stripe_payment_intent_id")
+  stripeSessionId       String?         @unique @map("stripe_session_id")
+  
+  // Purchase flow
+  purchaseToken         String?         @unique @map("purchase_token") // JWT token for webapp
+  tokenExpiresAt        DateTime?       @map("token_expires_at")
+  
+  // Completion
+  completedAt           DateTime?       @map("completed_at")
+  creditsGrantedAt      DateTime?       @map("credits_granted_at")
+  
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package CreditPackage @relation(fields: [packageId], references: [id])
+  
+  @@index([userId])
+  @@index([status])
+  @@index([purchaseToken])
+  @@index([stripePaymentIntentId])
+  @@map("credit_purchases")
+}
+
+// Enhanced CreditTransaction for detailed audit
+model CreditTransaction {
+  id                String                @id @default(cuid())
+  userId            String                @map("user_id")
+  
+  // Transaction details
+  type              CreditTransactionType
+  amount            Int                   // Credits consumed/granted
+  
+  // Consumption breakdown (when type is CONSUMPTION)
+  fromSubscription  Int                   @default(0) @map("from_subscription")
+  fromPurchased     Int                   @default(0) @map("from_purchased")
+  
+  // Context
+  command           String?               // Command that triggered the transaction
+  description       String?               // Human readable description
+  metadata          Json?                 // Additional context
+  
+  // Related entities
+  purchaseId        String?               @map("purchase_id") // If related to purchase
+  subscriptionId    String?               @map("subscription_id") // If related to subscription
+  
+  createdAt         DateTime              @default(now()) @map("created_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, type, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("credit_transactions")
+}
+
+// ================================
+// ENUMS for Monetization System
+// ================================
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  UNPAID
+  TRIALING
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+}
+
+
+enum PurchaseStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum CreditTransactionType {
+  CONSUMPTION     // User consumed credits
+  PURCHASE_GRANT  // Credits granted from purchase
+  SUBSCRIPTION_RESET // Monthly reset of subscription credits
+  ADMIN_GRANT     // Manual admin grant
+  ADMIN_REVOKE    // Manual admin revoke
+  BONUS_GRANT     // Promotional credits
+  REFUND_GRANT    // Credits from refund
+}
+
+enum SubscriptionChangeType {
+  PLAN_CHANGE     // Plan upgrade/downgrade
+  PLAN_CREATION   // New subscription created
+  PLAN_CANCELLATION // Subscription cancelled
+  PLAN_REACTIVATION // Cancelled subscription reactivated
+  STATUS_CHANGE   // Status change (active -> cancelled, etc.)
+  STRIPE_UPDATE   // Updated from Stripe webhook
+  ADMIN_MODIFY    // Manual admin modification
+}
+
+enum SubscriptionTrigger {
+  USER            // User-initiated change (web/bot)
+  ADMIN           // Admin-initiated change
+  STRIPE_WEBHOOK  // Stripe webhook event
+  SYSTEM          // System-initiated (e.g., expiration)
+  API             // External API call
+}
+
+// ================================
+// BACKGROUND JOBS SYSTEM
+// ================================
+
+model BackgroundJob {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  type            JobType  // DUNGEON_GENERATION, CAMPAIGN_GENERATION, etc.
+  status          JobStatus
+  progress        Int      @default(0) // 0-100
+  currentStep     Int      @default(0) // Current step number being processed
+  totalSteps      Int      // Total number of steps for this job
+  
+  // Job configuration (specific to job type)
+  config          Json
+  
+  // Results and output
+  result          Json?    // Final result when completed
+  error           String?  // Error message if failed
+  
+  // Credit cost tracking
+  creditCost      Int      @map("credit_cost") // Credits charged for this job
+  creditsCharged  Boolean  @default(false) @map("credits_charged") // Whether credits were already deducted
+  
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  startedAt       DateTime? @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+  
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps           JobStep[]
+  dungeon         Dungeon? // Dungeon created by this job (if applicable)
+  
+  // Indexes
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@index([userId, status])
+  @@index([userId, type])
+  @@index([createdAt])
+  @@map("background_jobs")
+}
+
+model JobStep {
+  id              String   @id @default(cuid())
+  jobId           String   @map("job_id")
+  stepNumber      Int      @map("step_number") // Sequential step number (1, 2, 3...)
+  name            String   // Step name/type (validate_config, generate_structure, etc.)
+  status          StepStatus
+  
+  // Step processing data
+  input           Json?    // Input data for this step
+  output          Json?    // Output data from this step
+  error           String?  // Error message if step failed
+  
+  // Step metadata
+  timeoutSeconds  Int      @default(300) @map("timeout_seconds") // Step timeout (5 minutes default)
+  retryCount      Int      @default(0) @map("retry_count") // Number of retries attempted
+  maxRetries      Int      @default(3) @map("max_retries") // Maximum retries allowed
+  
+  // Timestamps
+  startedAt       DateTime? @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+  
+  // Relations
+  job             BackgroundJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  // Indexes and constraints
+  @@unique([jobId, stepNumber])
+  @@index([jobId])
+  @@index([status])
+  @@map("job_steps")
+}
+
+// ================================
+// DUNGEON GENERATION MODELS
+// ================================
+
+model Dungeon {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  placeId         String   @map("place_id") // Place this dungeon was generated for
+  jobId           String?  @unique @map("job_id") // Background job that created this dungeon
+  
+  // Generation parameters
+  level           Int      // Dungeon level (1-20)
+  floors          Int      // Number of floors (1-5)
+  difficulty      String   // normal, moderate, extreme
+  useCustomEnemies Boolean @map("use_custom_enemies")
+  
+  // Generated content
+  name            String
+  description     String
+  overview        String   // General dungeon overview for GM
+  
+  // Dungeon metadata
+  autoTags        String[] @map("auto_tags")
+  
+  // Sharing and audio fields (following existing pattern)
+  url             String?  // Public sharing URL slug
+  urlAudio        String?  @map("url_audio") // Audio narration file path
+  isPublic        Boolean  @default(false) @map("is_public") // Public sharing enabled
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  place           Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  job             BackgroundJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  rooms           DungeonRoom[]
+  
+  // Indexes
+  @@index([userId])
+  @@index([placeId])
+  @@index([level])
+  @@index([userId, level])
+  @@unique([url]) // Unique constraint for public sharing URLs
+  @@map("dungeons")
+}
+
+model DungeonRoom {
+  id              String   @id @default(cuid())
+  dungeonId       String   @map("dungeon_id")
+  
+  // Room identification
+  roomNumber      String   @map("room_number") // "1.1", "1.2", "2.1", etc.
+  floor           Int      // Floor number (1, 2, 3...)
+  type            String   // 'room', 'corridor', 'entrance', 'boss_room', 'treasure_room'
+  
+  // Room content
+  name            String?  // Optional room name
+  narrative       String   // Player-facing narrative description
+  
+  // GM information
+  masterInfo      Json     // {enemies: [], traps: [], treasure: [], specialFeatures: []}
+  connectsTo      String[] @map("connects_to") // Array of room numbers this connects to
+  
+  // Room metadata
+  size            String?  // small, medium, large
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  dungeon         Dungeon  @relation(fields: [dungeonId], references: [id], onDelete: Cascade)
+  
+  // Indexes and constraints
+  @@unique([dungeonId, roomNumber])
+  @@index([dungeonId])
+  @@index([floor])
+  @@map("dungeon_rooms")
+}
+
+// ================================
+// BESTIARY SYSTEM
+// ================================
+
+model Bestiary {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  
+  // Basic creature information
+  name          String
+  ancestry      String   // 'human', 'orc', 'goblin', 'wolf', 'skeleton', etc.
+  level         Int
+  description   String?
+  background    String?  // Creature's history and origin
+  personality   String?  // Personality and behavior
+  appearance    String?  // Physical appearance description
+  rarity        String   @default("common") // 'common', 'uncommon', 'rare'
+  isElite       Boolean  @default(false)    @map("is_elite") // Elite creatures for severe/extreme encounters
+  
+  // Complete game stats (following PathGM schema)
+  stats         Json     // Complete structure: hp, ac, saves, attacks, abilities, etc.
+  
+  // Matching system
+  autoTags      String[] @map("auto_tags")      // Tags for finding creatures
+  environments  String[] @default([])           // ['forest', 'dungeon', 'city', 'swamp']
+  
+  // Usage control
+  timesUsed     Int      @default(0)            @map("times_used")
+  lastUsedAt    DateTime? @map("last_used_at")
+  createdAt     DateTime @default(now())        @map("created_at")
+  updatedAt     DateTime @updatedAt             @map("updated_at")
+  
+  // Metadata
+  sourceEncounterTags String[] @default([])    @map("source_encounter_tags") // Tags from encounter that created this creature
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Indexes for fast searching
+  @@index([userId, level, autoTags])
+  @@index([userId, ancestry, level])
+  @@index([environments])
+  @@index([timesUsed, lastUsedAt])
+  @@index([isElite, level])
+  @@map("bestiary")
+}
+
+// ================================
+// BACKGROUND JOBS ENUMS
+// ================================
+
+enum JobType {
+  DUNGEON_GENERATION
+  CAMPAIGN_GENERATION
+  WORLD_BUILDING
+  MASS_NPC_GENERATION
+}
+
+enum JobStatus {
+  PENDING           // Waiting to start
+  PROCESSING        // Currently being processed
+  COMPLETED         // Successfully completed
+  FAILED            // Failed with error
+  CANCELLED         // Cancelled by user
+  TIMEOUT           // Timed out during processing
+}
+
+enum StepStatus {
+  PENDING           // Waiting to be processed
+  PROCESSING        // Currently being processed
+  COMPLETED         // Successfully completed
+  FAILED            // Failed with error
+  SKIPPED           // Skipped due to conditions
+  TIMEOUT           // Timed out
+}
