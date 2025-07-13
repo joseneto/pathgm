@@ -55,7 +55,7 @@ ${t('or_use_menu', { command: 'importplayer' }) || 'Or use /importplayer without
  * Menu message for /newplayer command
  */
 export function buildNewPlayerMenuMessage(t: any): string {
-  return `${t('newplayer_menu_prompt')}\n\n${t('newplayer_instructions')}\n\n${t('quick_commands')}:\n<code>/newplayer "Rurik" fighter 5</code>\n<code>/newplayer "Lyra" wizard 3 perception=12</code>\n<code>/newplayer "Theron" rogue 7 athletics=15 acrobatics=18</code>`;
+  return `${t('newplayer_menu_prompt')}\n\n${t('newplayer_instructions')}\n\n${t('quick_commands')}:\n<code>/newplayer Rurik fighter 5</code>\n<code>/newplayer Lyra wizard 3 perception=12</code>\n<code>/newplayer "Theron" rogue 7 athletics=15 acrobatics=18</code>`;
 }
 
 /**
@@ -110,7 +110,7 @@ ${t('or_use_menu', { command: 'newplayer' }) || 'Or use /newplayer without param
  * Menu message for /editplayer command
  */
 export function buildEditPlayerMenuMessage(t: any): string {
-  return `${t('editplayer_menu_prompt')}\n\n${t('editplayer_instructions')}\n\n${t('quick_commands')}:\n<code>/editplayer "Rurik" level=10 perception=5</code>\n<code>/editplayer "Rurik" acrobatics=10 athletics=12</code>\n<code>/editplayer "Lyra" fortitude=8 will=6 reflex=4</code>`;
+  return `${t('editplayer_menu_prompt')}\n\n${t('editplayer_instructions')}\n\n${t('quick_commands')}:\n<code>/editplayer Rurik level=10 perception=5</code>\n<code>/editplayer Rurik acrobatics=10 athletics=12</code>\n<code>/editplayer Lyra fortitude=8 will=6 reflex=4</code>\n\n<b>💡 ${t('tips')}:</b>\n• ${t('tip_partial_search_enabled')}`;
 }
 
 /**
@@ -126,11 +126,11 @@ ${t('editplayer_description')}
 <code>/editplayer &lt;nome&gt; &lt;atributo&gt;=&lt;valor&gt; [...]</code>
 
 <b>📖 ${t('examples')}:</b>
-<code>/editplayer "Rurik" level=10</code>
-<code>/editplayer "Lyra" name="Nova Lyra" className=sorcerer</code>
-<code>/editplayer "Theron" level=7 will=6 reflex=9</code>
-<code>/editplayer "Mago" perception=5 fortitude=8</code>
-<code>/editplayer "Rurik" acrobatics=12 athletics=15</code>
+<code>/editplayer Rurik level=10</code>
+<code>/editplayer "Nova Lyra" name="Lyra Renamed" className=sorcerer</code>
+<code>/editplayer Theron level=7 will=6 reflex=9</code>
+<code>/editplayer Mago perception=5 fortitude=8</code>
+<code>/editplayer Rurik acrobatics=12 athletics=15</code>
 
 <b>🎯 ${t('editable_attributes')}:</b>
 • <b>name:</b> ${t('player_name_desc')}
@@ -154,6 +154,7 @@ ${t('multiple_updates_desc')}
 • ${t('tip_use_listplayers_for_ids')}
 • ${t('tip_quotes_for_names_with_spaces')}
 • ${t('tip_multiple_attributes_single_command')}
+• ${t('tip_partial_search_enabled')}
 
 ${t('or_use_menu', { command: 'editplayer' }) || 'Or use /editplayer without parameters for the interactive menu.'}
 `.trim();
@@ -214,12 +215,12 @@ export function getRollHelpMessage(t: any): string {
 ${t('roll_description')}
 
 <b>${t('usage')}:</b>
-<code>/roll "Player1,Player2" &lt;attribute&gt; [modifier]</code>
+<code>/roll Player1,Player2 &lt;attribute&gt; [modifier]</code>
 
 <b>${t('examples')}:</b>
-<code>/roll "Rurik" perception</code>
-<code>/roll "Lyra,Seelah" athletics +2</code>
-<code>/roll "Ezren" diplomacy -1</code>
+<code>/roll Rurik perception</code>
+<code>/roll Lyra,Seelah athletics +2</code>
+<code>/roll Ezren diplomacy -1</code>
 
 <b>${t('parameters')}:</b>
 • <b>${t('players')}:</b> ${t('roll_players_desc')}
@@ -235,6 +236,7 @@ ${t('roll_description')}
 • ${t('tip_comma_separated_players')}
 • ${t('tip_partial_names_allowed')}
 • ${t('tip_alias_supported')}
+• ${t('tip_partial_search_enabled')}
 
 ${t('or_use_menu', { command: 'roll' })}
 `.trim();
@@ -247,13 +249,16 @@ export function buildRollMenuMessage(t: any): string {
 ${t('roll_description')}
 
 <b>${t('quick_commands')}:</b>
-<code>/roll "Player" perception</code>
-<code>/roll "P1,P2" athletics +2</code>
+<code>/roll Rurik perception</code>
+<code>/roll Lyra,Seelah athletics +2</code>
 
 <b>🎯 ${t('common_rolls')}:</b>
 • <b>${t('saves')}:</b> fortitude, reflex, will
 • <b>${t('skills')}:</b> perception, athletics, stealth
 • <b>${t('social')}:</b> diplomacy, deception, intimidation
+
+<b>💡 ${t('tips')}:</b>
+• ${t('tip_partial_search_enabled')}
 
 ${t('use_help_for_full_info', { command: '/roll' })}
 `.trim();

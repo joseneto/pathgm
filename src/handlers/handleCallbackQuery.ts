@@ -6,6 +6,16 @@ import { getTranslation } from '../helpers/commandHelpers';
 export async function handleCallbackQuery(ctx: any, safeWrapper: any) {
   const [t] = getTranslation(ctx);
   try {
+    // Handle new simplified list system first (priority over session context)
+    const data = ctx.callbackQuery?.data;
+    if (data) {
+      // Handle new entity actions (delete) - always process these regardless of session
+      if (data.match(/^[a-z]+_action_[a-z]+_/)) {
+        await safeWrapper(actionHandler)(ctx);
+        return;
+      }
+    }
+
     const currentContext = SessionManager.getCurrentContext(ctx);
     if (currentContext && SessionManager.isExpecting(ctx, 'callback')) {
       if (!currentContext.handler) {
@@ -18,14 +28,7 @@ export async function handleCallbackQuery(ctx: any, safeWrapper: any) {
       return;
     }
 
-    // Handle new simplified list system
-    const data = ctx.callbackQuery?.data;
     if (data) {
-      // Handle new entity actions (delete)
-      if (data.match(/^[a-z]+_action_[a-z]+_/)) {
-        await safeWrapper(actionHandler)(ctx);
-        return;
-      }
 
       // Handle delete confirmations
       if (data.startsWith('confirm_delete_') || data === 'cancel_delete') {

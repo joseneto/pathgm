@@ -9,6 +9,8 @@ export async function handleClearData(ctx: any) {
   const [t] = getTranslation(ctx);
 
   switch (buttonData) {
+  case 'clear_players':
+    break;
   case 'clear_all':
     break;
   default:

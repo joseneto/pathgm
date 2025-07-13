@@ -85,14 +85,21 @@ async function executeImportPlayer(ctx: any, input: string, t: any) {
     });
 
     // Create action buttons for the new player
-    const ab = actionButtons(savedPlayer, 'player', t);
-    const message = formatPlayerHtml(parsed, t);
+    try {
+      const ab = actionButtons(savedPlayer, 'player', t);
+      const message = formatPlayerHtml(parsed, t);
 
-    await ctx.reply(message, {
-      parse_mode: 'HTML',
-      reply_markup: ab.reply_markup,
-    });
-  } catch {
+      await ctx.reply(message, {
+        parse_mode: 'HTML',
+        reply_markup: ab.reply_markup,
+      });
+    } catch (formatError) {
+      console.error('[importPlayer] Error in formatting/sending:', formatError);
+      // Send a simple success message instead
+      await ctx.reply(`✅ Personagem "${parsed.name}" importado com sucesso!`);
+    }
+  } catch (error) {
+    console.error('[importPlayer] Error during import:', error);
     await ctx.reply(t('addplayer_error'), { parse_mode: 'HTML' });
   }
 }

@@ -81,9 +81,9 @@
   "editplayer_menu_prompt": "🛠️ Let's edit an existing character!",
   "editplayer_instructions": "Click the button below to start or use the quick commands.",
   "editplayer_start_button": "🛠️ Edit Character",
-  "editplayer_input_prompt": "🛠️ Enter the edit command in the format:\n<b>Name attribute=value [attribute2=value2...]</b>\n\n<b>Examples:</b>\n• <code>\"Rurik\" level=10</code>\n• <code>\"Lyra\" name=\"New Lyra\" className=sorcerer</code>\n• <code>\"Theron\" acrobatics=12 athletics=15</code>\n\n<b>Editable attributes:</b>\nname, alias, className, level, perception, fortitude, reflex, will, skills (acrobatics, arcana, athletics, crafting, deception, diplomacy, intimidation, medicine, nature, occultism, performance, religion, society, stealth, survival, thievery)\n\nType 'cancel' to exit.",
+  "editplayer_input_prompt": "🛠️ Enter the edit command in the format:\n<b>Name attribute=value [attribute2=value2...]</b>\n\n<b>Examples:</b>\n• <code>Rurik level=10</code>\n• <code>\"New Lyra\" name=\"Lyra Renamed\" className=sorcerer</code>\n• <code>Theron acrobatics=12 athletics=15</code>\n\n<b>Editable attributes:</b>\nname, alias, className, level, perception, fortitude, reflex, will, skills (acrobatics, arcana, athletics, crafting, deception, diplomacy, intimidation, medicine, nature, occultism, performance, religion, society, stealth, survival, thievery)\n\nType 'cancel' to exit.",
   "editplayer_description": "Edit attributes of existing characters with support for multiple updates.",
-  "editplayer_usage_error": "⚠️ Use the format: /editplayer <name_or_id> <attribute>=<value> [...]\n\nEx: /editplayer \"Rurik\" level=10 perception=5",
+  "editplayer_usage_error": "⚠️ Use the format: /editplayer <name_or_id> <attribute>=<value> [...]\n\nEx: /editplayer Rurik level=10 perception=5",
   "editplayer_no_updates": "❌ No valid updates provided.",
   "editplayer_player_not_found": "❌ Character not found. Use /listplayers to see your characters.",
   "editplayer_invalid_level": "❌ Invalid level: {{value}}. Use a number between 1 and 20.",
@@ -213,5 +213,13 @@
   "tip_use_role_tags": "Use role tags to organize party composition",
   "cleardata_menu_prompt": "🗑️ Player Data Cleanup",
   "cleardata_instructions": "⚠️ <b>Warning:</b> This action will permanently remove all your registered characters.\n\n📋 <b>What will be removed:</b>\n• All imported characters\n• All manually created characters\n• Level, skill, and stat data\n• Pathbuilder connections\n\n🔒 <b>What will NOT be removed:</b>\n• Your user profile\n• Bot settings\n\n⚠️ This action cannot be undone!",
-  "try_listplayers_help": "Use /listplayers -h to see filter options"
+  "try_listplayers_help": "Use /listplayers -h to see filter options",
+  "cmd_cleardata": "Clear player data",
+  "cleardata_success_summary": "✅ Data successfully removed: {{summary}}",
+  "cleardata_no_data": "ℹ️ No data found to remove.",
+  "cleardata_error": "❌ Error removing data. Please try again.",
+  "entity_deleted_successfully": "Player deleted successfully",
+  "entity_removed_from_campaign": "The player has been removed from your campaign.",
+  "entity_not_found": "Player not found",
+  "tip_partial_search_enabled": "Partial name search: type part of the name to find the character"
 }

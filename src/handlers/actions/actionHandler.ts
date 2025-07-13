@@ -55,7 +55,6 @@ async function handleDeleteAction(ctx: any, entityType: string, entityId: string
   await ctx.reply(
     `⚠️ **${t('confirm_delete_entity') || 'Confirm deletion'}**\n\n` +
     `${t('entity_name') || 'Name'}: **${item.name || item.title}**\n` +
-    `${t('entity_type') || 'Type'}: ${entityType}\n\n` +
     `${t('delete_warning') || 'This action cannot be undone.'}`,
     {
       parse_mode: 'HTML',

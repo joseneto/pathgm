@@ -17,6 +17,7 @@ export async function initDynamicCommands(bot: Telegraf<any>, ctx: any) {
       { command: 'syncplayers', description: t('cmd_syncplayers') },
       { command: 'editplayer', description: t('cmd_editplayer') },
       { command: 'listplayers', description: t('cmd_listplayers') },
+      { command: 'cleardata', description: t('cmd_cleardata') },
       { command: 'menu', description: t('cmd_menu') },
       { command: 'help', description: t('cmd_help') },
       { command: 'about', description: t('cmd_about') },

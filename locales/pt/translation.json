@@ -82,9 +82,9 @@
   "editplayer_menu_prompt": "🛠️ Vamos editar um personagem existente!",
   "editplayer_instructions": "Clique no botão abaixo para começar ou use os comandos rápidos.",
   "editplayer_start_button": "🛠️ Editar Personagem",
-  "editplayer_input_prompt": "🛠️ Digite o comando de edição no formato:\n<b>Nome atributo=valor [atributo2=valor2...]</b>\n\n<b>Exemplos:</b>\n• <code>\"Rurik\" level=10</code>\n• <code>\"Lyra\" name=\"Nova Lyra\" className=sorcerer</code>\n• <code>\"Theron\" acrobatics=12 athletics=15</code>\n\n<b>Atributos editáveis:</b>\nname, alias, className, level, perception, fortitude, reflex, will, perícias (acrobatics, arcana, athletics, crafting, deception, diplomacy, intimidation, medicine, nature, occultism, performance, religion, society, stealth, survival, thievery)\n\nDigite 'cancelar' para sair.",
+  "editplayer_input_prompt": "🛠️ Digite o comando de edição no formato:\n<b>Nome atributo=valor [atributo2=valor2...]</b>\n\n<b>Exemplos:</b>\n• <code>Rurik level=10</code>\n• <code>\"Nova Lyra\" name=\"Lyra Renomeada\" className=sorcerer</code>\n• <code>Theron acrobatics=12 athletics=15</code>\n\n<b>Atributos editáveis:</b>\nname, alias, className, level, perception, fortitude, reflex, will, perícias (acrobatics, arcana, athletics, crafting, deception, diplomacy, intimidation, medicine, nature, occultism, performance, religion, society, stealth, survival, thievery)\n\nDigite 'cancelar' para sair.",
   "editplayer_description": "Edite atributos de personagens existentes com suporte a múltiplas atualizações.",
-  "editplayer_usage_error": "⚠️ Use o formato: /editplayer <nome_ou_id> <atributo>=<valor> [...]\n\nEx: /editplayer \"Rurik\" level=10 perception=5",
+  "editplayer_usage_error": "⚠️ Use o formato: /editplayer <nome_ou_id> <atributo>=<valor> [...]\n\nEx: /editplayer Rurik level=10 perception=5",
   "editplayer_no_updates": "❌ Nenhuma atualização válida fornecida.",
   "editplayer_player_not_found": "❌ Personagem não encontrado. Use /listplayers para ver seus personagens.",
   "editplayer_invalid_level": "❌ Nível inválido: {{value}}. Use um número entre 1 e 20.",
@@ -214,5 +214,13 @@
   "tip_use_role_tags": "Use tags de função para organizar a composição do grupo",
   "cleardata_menu_prompt": "🗑️ Limpeza de Dados dos Jogadores",
   "cleardata_instructions": "⚠️ <b>Atenção:</b> Esta ação removerá permanentemente todos os seus personagens cadastrados.\n\n📋 <b>O que será removido:</b>\n• Todos os personagens importados\n• Todos os personagens criados manualmente\n• Dados de níveis, perícias e estatísticas\n• Conexões com Pathbuilder\n\n🔒 <b>O que NÃO será removido:</b>\n• Seu perfil de usuário\n• Configurações do bot\n\n⚠️ Esta ação não pode ser desfeita!",
-  "try_listplayers_help": "Use /listplayers -h para ver opções de filtro"
+  "try_listplayers_help": "Use /listplayers -h para ver opções de filtro",
+  "cmd_cleardata": "Limpar dados dos jogadores",
+  "cleardata_success_summary": "✅ Dados removidos com sucesso: {{summary}}",
+  "cleardata_no_data": "ℹ️ Nenhum dado encontrado para remover.",
+  "cleardata_error": "❌ Erro ao remover dados. Tente novamente.",
+  "entity_deleted_successfully": "Personagem removido com sucesso",
+  "entity_removed_from_campaign": "O personagem foi removido da sua campanha.",
+  "entity_not_found": "Personagem não encontrado",
+  "tip_partial_search_enabled": "Busca por parte do nome: digite apenas parte do nome para encontrar o personagem"
 }
