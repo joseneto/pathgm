@@ -1,5 +1,4 @@
 // Helper for parsing player attributes - shared between editPlayer and newPlayer
-
 // List of valid Pathfinder 2e skills
 export const VALID_SKILLS = [
   'acrobatics', 'arcana', 'athletics', 'crafting', 'deception', 'diplomacy',
@@ -29,12 +28,12 @@ export function isSkillName(key: string): boolean {
  */
 export function parseAttributeUpdates(args: string[]): PlayerAttributeUpdates {
   const updates: PlayerAttributeUpdates = {};
-  
+
   for (const arg of args) {
     const match = arg.match(/^(\w+)=(.+)$/);
     if (match) {
       const [, key, value] = match;
-      
+
       // Parse different types of values
       if (['level', 'perception', 'fortitude', 'reflex', 'will'].includes(key)) {
         const numValue = parseInt(value, 10);
@@ -53,7 +52,7 @@ export function parseAttributeUpdates(args: string[]): PlayerAttributeUpdates {
       }
     }
   }
-  
+
   return updates;
 }
 
@@ -66,7 +65,7 @@ export function validatePlayerUpdates(
   existingSkills?: Record<string, any>
 ): { isValid: boolean; validatedUpdates?: any; errorMessage?: string } {
   const validatedUpdates: any = {};
-  
+
   for (const [key, value] of Object.entries(updates)) {
     switch (key) {
       case 'name':
@@ -103,7 +102,7 @@ export function validatePlayerUpdates(
         if (typeof value === 'object' && value !== null) {
           const currentSkills = existingSkills || {};
           const updatedSkills = { ...currentSkills };
-          
+
           for (const [skillName, skillValue] of Object.entries(value)) {
             if (isSkillName(skillName) && typeof skillValue === 'number' && skillValue >= -10 && skillValue <= 50) {
               updatedSkills[skillName] = skillValue;
@@ -114,7 +113,7 @@ export function validatePlayerUpdates(
               };
             }
           }
-          
+
           validatedUpdates[key] = updatedSkills;
         }
         break;
@@ -125,7 +124,7 @@ export function validatePlayerUpdates(
         };
     }
   }
-  
+
   return {
     isValid: true,
     validatedUpdates
@@ -137,10 +136,10 @@ export function validatePlayerUpdates(
  */
 export function createDefaultSkills(): Record<string, number> {
   const skills: Record<string, number> = {};
-  
+
   for (const skill of VALID_SKILLS) {
     skills[skill] = 0; // Default all skills to 0
   }
-  
+
   return skills;
 }

@@ -109,7 +109,6 @@ export function parsePathbuilderCharacter(json: any, id: string): ParsedPlayer |
 
   const dexPenalty = armorPenaltyActive ? getDexPenaltyFromArmor(armorList) : 0;
 
-  // Extrai todas as proficiências que não são saves ou armaduras
   const excluded = ['advanced', 'classdc', 'perception', 'fortitude', 'reflex', 'will', 'heavy', 'medium', 'light', 'unarmored', 'martial', 'simple', 'unarmed', 'castingarcane', 'castingdivine', 'castingoccult', 'castingprimal'];
   const skills: SkillType = {};
 

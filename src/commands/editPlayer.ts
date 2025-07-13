@@ -105,8 +105,8 @@ async function executeEditPlayer(ctx: any, params: EditPlayerParams, t: any) {
       });
     });
 
-    // Create action buttons for the updated player (without narration)
-    const ab = actionButtons(updatedPlayer, 'player', t, false);
+    // Create action buttons for the updated player
+    const ab = actionButtons(updatedPlayer, 'player', t);
     const message = formatPlayerHtml(updatedPlayer as any, t);
 
     // Show changes made

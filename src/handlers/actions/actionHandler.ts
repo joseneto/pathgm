@@ -1,13 +1,7 @@
 import { getUserLang } from '../../helpers/getUserLang';
-import i18next from 'i18next';
 import { listHandler } from '../../handlers/pagination/listHandler';
-import { handleAudioGeneration } from '../handleAudioGeneration';
-import { getFullUrl } from '../../config/domainConfig';
+import { getTranslation } from '../../helpers/commandHelpers';
 
-/**
- * New handler for entity actions (delete, edit, contextual, etc.)
- * Adapted for PathGM's existing architecture
- */
 export async function actionHandler(ctx: any) {
   if (!('data' in ctx.callbackQuery!)) return false;
 
@@ -19,11 +13,7 @@ export async function actionHandler(ctx: any) {
   if (!match) return false;
 
   const [, entityType, actionName, entityId] = match;
-  const lang = getUserLang(ctx);
-  const t = i18next.getFixedT(lang);
-
-  console.log(`🔧 Action handler: ${entityType} -> ${actionName} -> ${entityId}`);
-
+  const [t] = getTranslation(ctx);
   try {
     switch (actionName) {
       case 'delete':
@@ -38,7 +28,6 @@ export async function actionHandler(ctx: any) {
     }
     return true;
   } catch (error) {
-    console.error(`❌ Error in action handler:`, error);
     const errorMessage = (error instanceof Error) ? error.message : String(error);
     await ctx.reply(`❌ ${t('action_error') || 'Action error'}: ${errorMessage}`);
     return false;
@@ -52,14 +41,12 @@ async function handleDeleteAction(ctx: any, entityType: string, entityId: string
     return;
   }
 
-  // Get entity name for confirmation
   const { item } = await handler.getItemDetails(entityId, t);
   if (!item) {
     await ctx.reply(`❌ ${t('entity_not_found') || 'Entity not found'}`);
     return;
   }
 
-  // Confirmation with entity name
   const confirmButtons = [
     [
       { text: `✅ ${t('confirm_delete') || 'Confirm'}`, callback_data: `confirm_delete_${entityType}_${entityId}` },
@@ -80,7 +67,6 @@ async function handleDeleteAction(ctx: any, entityType: string, entityId: string
 }
 
 async function handleWebappAction(ctx: any, entityType: string, entityId: string, t: any) {
-  // Get entity for slug generation
   const handler = listHandler[`list${entityType}s` as keyof typeof listHandler];
   const { item } = await handler.getItemDetails(entityId, t);
 
@@ -91,12 +77,11 @@ async function handleWebappAction(ctx: any, entityType: string, entityId: string
 
   // Generate webapp URL (using slug if available, fallback to ID)
   const identifier = item.slug || entityId;
-  const webappUrl = getFullUrl(`/${entityType}/${identifier}`, 'webapp');
   const itemName = item.name || item.title;
 
   await ctx.reply(
     `🌐 **${t('view_in_webapp') || 'View in WebApp'}:**\n\n` +
-    `[${itemName}](${webappUrl})\n\n` +
+    `[${itemName}](${'pathbuild_url'})\n\n` +
     `📱 ${t('webapp_features') || 'WebApp features'}:\n` +
     `• ${t('detailed_view') || 'Detailed view'}\n` +
     `• ${t('pdf_export') || 'PDF export'}\n` +
@@ -118,8 +103,7 @@ export async function handleDeleteConfirmation(ctx: any) {
     if (!match) return false;
 
     const [, entityType, entityId] = match;
-    const lang = getUserLang(ctx);
-    const t = i18next.getFixedT(lang);
+    const [t] = getTranslation(ctx);
 
     try {
       const handler = listHandler[`list${entityType}s` as keyof typeof listHandler];
@@ -140,11 +124,10 @@ export async function handleDeleteConfirmation(ctx: any) {
       return true;
     }
   }
-  
+
   if (data === 'cancel_delete') {
-    const lang = getUserLang(ctx);
-    const t = i18next.getFixedT(lang);
-    
+    const [t] = getTranslation(ctx);
+
     await ctx.editMessageText(
       `❌ **${t('delete_cancelled') || 'Delete cancelled'}**\n\n${t('entity_not_modified') || 'The entity was not modified.'}`,
       { parse_mode: 'HTML' }

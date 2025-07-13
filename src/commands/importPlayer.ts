@@ -84,7 +84,8 @@ async function executeImportPlayer(ctx: any, input: string, t: any) {
       });
     });
 
-    const ab = actionButtons(savedPlayer, 'player', t, false);
+    // Create action buttons for the new player
+    const ab = actionButtons(savedPlayer, 'player', t);
     const message = formatPlayerHtml(parsed, t);
 
     await ctx.reply(message, {

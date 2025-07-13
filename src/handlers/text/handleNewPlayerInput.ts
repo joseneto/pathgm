@@ -1,31 +1,28 @@
-import i18next from 'i18next';
-import { getUserLang } from '../../helpers/getUserLang';
-import { SessionManager } from '../../utils/SessionManager';
+import { getTranslation } from '../../helpers/commandHelpers';
 import { executeNewPlayer } from '../../commands/newPlayer';
 import { isCancelInput } from '../../helpers/isCancelInput';
 import { parseAttributeUpdates } from '../../helpers/playerAttributeParser';
+import { SessionManager } from '../../utils/SessionManager';
 
 export const handleNewPlayerInput = async (ctx: any): Promise<boolean> => {
-  const lang = getUserLang(ctx);
-  const t = i18next.getFixedT(lang);
+  const [t] = getTranslation(ctx);
 
   // Handle callback from menu button
   if (ctx.callbackQuery) {
     const callbackData = ctx.callbackQuery.data;
-    
+
     if (callbackData === 'newplayer_start') {
       await ctx.answerCbQuery();
-      
       // Delete the menu message
       try {
         await ctx.deleteMessage();
       } catch (error) {
         console.log('Could not delete menu message');
       }
-      
+
       // Ask for input and init SessionManager to expect text
       const sent = await ctx.reply(t('newplayer_input_prompt'), { parse_mode: 'HTML' });
-      
+
       SessionManager.initCommand(ctx, {
         stepId: 'newplayer_input',
         inputType: 'text',
@@ -33,11 +30,11 @@ export const handleNewPlayerInput = async (ctx: any): Promise<boolean> => {
         params: {},
         handler: handleNewPlayerInput
       });
-      
+
       return true;
     }
   }
-  
+
   // Handle text input (called by handleTextInput)
   const text = SessionManager.getMessageText(ctx);
   if (!text) return false;
@@ -57,7 +54,7 @@ export const handleNewPlayerInput = async (ctx: any): Promise<boolean> => {
 
   const [name, className, levelRaw, ...attributeArgs] = input;
   const level = parseInt(levelRaw, 10);
-  
+
   if (isNaN(level) || level < 1 || level > 20) {
     await ctx.reply(t('createplayer_invalid_level'), { parse_mode: 'HTML' });
     return true;
@@ -68,9 +65,8 @@ export const handleNewPlayerInput = async (ctx: any): Promise<boolean> => {
 
   // Clear session before executing creation
   SessionManager.clearSession(ctx);
-  
+
   // Execute the player creation
   await executeNewPlayer(ctx, { name, className, level, attributes }, t);
-  
   return true;
 };

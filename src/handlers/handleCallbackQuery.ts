@@ -1,38 +1,28 @@
-import { SessionManager } from '../utils/SessionManager';
-import { sendLocalizedMessage } from '../apis/telegram';
 import { paginationHandler } from './pagination/paginationHandler';
 import { actionHandler, handleDeleteConfirmation } from './actions/actionHandler';
-import { handleAudioGeneration } from './handleAudioGeneration';
+import { SessionManager } from '../utils/SessionManager';
+import { getTranslation } from '../helpers/commandHelpers';
 
 export async function handleCallbackQuery(ctx: any, safeWrapper: any) {
+  const [t] = getTranslation(ctx);
   try {
     const currentContext = SessionManager.getCurrentContext(ctx);
     if (currentContext && SessionManager.isExpecting(ctx, 'callback')) {
       if (!currentContext.handler) {
         console.warn('handleCallbackQuery: Context without handler');
-        await sendLocalizedMessage(ctx, 'callback_invalid');
+        await ctx.reply(t('callback_invalid'), { parse_mode: 'HTML' });
         SessionManager.clearSession(ctx);
         return;
       }
-
-      console.log(`handleCallbackQuery: Using SessionManager for stepId: ${currentContext.stepId}`);
       await safeWrapper(currentContext.handler)(ctx);
       return;
     }
 
-    // ✅ NEW: Priority 1.5 - Handle new simplified list system
+    // Handle new simplified list system
     const data = ctx.callbackQuery?.data;
     if (data) {
-      // Handle audio generation callbacks
-      if (data.startsWith('audio_generate_')) {
-        console.log('handleCallbackQuery: Using audio generation handler');
-        await safeWrapper(handleAudioGeneration)(ctx);
-        return;
-      }
-
-      // Handle new entity actions (delete, edit, contextual, etc.)
+      // Handle new entity actions (delete)
       if (data.match(/^[a-z]+_action_[a-z]+_/)) {
-        console.log('handleCallbackQuery: Using new action handler');
         await safeWrapper(actionHandler)(ctx);
         return;
       }
@@ -44,27 +34,23 @@ export async function handleCallbackQuery(ctx: any, safeWrapper: any) {
         return;
       }
 
-
       // Handle new simplified pagination
-      if (data.match(/^(listnpcs|listplots|listplaces|listregions|listencounters|listitems|listnotes|listplayers)_(page|item)_/)) {
-        console.log('handleCallbackQuery: Using new pagination handler');
+      if (data.match(/^(listplayers)_(page|item)_/)) {
         await safeWrapper(paginationHandler)(ctx);
         return;
       }
     }
 
-    // ✅ Prioridade 2: Paginação (sistema antigo - mantido para compatibilidade)
     if (ctx.session?.paginationEnabled) {
-      console.log('handleCallbackQuery: Using legacy pagination handler');
       await safeWrapper(paginationHandler)(ctx);
       return;
     }
 
     console.warn('handleCallbackQuery: No valid context found for callback:', data);
-    await sendLocalizedMessage(ctx, 'callback_invalid');
+    await ctx.reply(t('callback_invalid'), { parse_mode: 'HTML' });
+
 
   } catch (error) {
-    console.error('handleCallbackQuery: Unexpected error', error);
     SessionManager.clearSession(ctx);
     await ctx.reply('🔄 Erro inesperado. Sessão foi resetada. Tente novamente.');
   }

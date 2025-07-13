@@ -1,6 +1,6 @@
 import { TFunction } from "i18next";
 import { escapeMarkdown } from "../utils/escapeMarkdown";
-import { Player } from "@prisma/client";
+import { Player } from "generated/client";
 
 function rollDie(sides: number): number {
   return Math.floor(Math.random() * sides) + 1;

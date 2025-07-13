@@ -83,8 +83,8 @@ async function executeNewPlayer(ctx: any, params: NewPlayerParams, t: any) {
       });
     });
 
-    // Create action buttons for the new player (without narration)
-    const ab = actionButtons(player, 'player', t, false);
+    // Create action buttons for the new player
+    const ab = actionButtons(player, 'player', t);
     const message = formatPlayerHtml(player as any, t);
 
     await ctx.reply(message, {

@@ -47,7 +47,6 @@ async function main() {
   bot.command('newplayer', safeWrapper(newPlayerCommand));
   bot.command('editplayer', safeWrapper(editPlayerCommand))
 
-
   bot.on('message', safeWrapper(handleTextInput))
 
   bot.on('callback_query', async (ctx) => {
