@@ -1,18 +1,17 @@
 import { formatPlayerHtml } from '../utils/htmlOutputFormat';
-import { prisma } from '@pathgm/shared/generated/client';
 import { getTranslation, getEditPlayerHelpMessage, buildEditPlayerMenuMessage } from '../helpers/commandHelpers';
-import { SessionManager } from '../utils/SessionManager';
 import { Markup } from 'telegraf';
 import { handleEditPlayerInput } from '../handlers/text/handleEditPlayerInput';
 import { actionButtons } from '../helpers/actionButtons';
-import { parseAttributeUpdates, validatePlayerUpdates, PlayerAttributeUpdates } from '../helpers/playerAttributeParser';
+import { parseAttributeUpdates, validatePlayerUpdates } from '../helpers/playerAttributeParser';
+import { SessionManager } from '../utils/SessionManager';
+import { withPrisma } from '../lib/withPrisma';
 
 interface EditPlayerParams {
   playerId?: string;
   playerName?: string;
   updates?: Record<string, any>;
 }
-
 
 /**
  * Parse direct command arguments
@@ -21,12 +20,12 @@ interface EditPlayerParams {
  */
 function parseDirectArgs(args: string[]): EditPlayerParams | null {
   if (args.length < 2) return null;
-  
+
   const [target, ...updateArgs] = args;
   const updates = parseAttributeUpdates(updateArgs);
-  
+
   if (Object.keys(updates).length === 0) return null;
-  
+
   // Check if target is numeric (ID) or string (name)
   if (/^\d+$/.test(target)) {
     return { playerId: target, updates };
@@ -40,23 +39,27 @@ function parseDirectArgs(args: string[]): EditPlayerParams | null {
  */
 async function findPlayer(ctx: any, params: EditPlayerParams) {
   const { playerId, playerName } = params;
-  
+
   if (playerId) {
-    return await prisma.player.findFirst({
-      where: {
-        id: playerId,
-        userId: ctx.user.id
-      }
+    return await withPrisma(async (prisma) => {
+      return await prisma.player.findFirst({
+        where: {
+          id: playerId,
+          userId: ctx.user.id
+        }
+      });
     });
   } else if (playerName) {
-    return await prisma.player.findFirst({
-      where: {
-        name: { contains: playerName, mode: 'insensitive' },
-        userId: ctx.user.id
-      }
+    return await withPrisma(async (prisma) => {
+      return await prisma.player.findFirst({
+        where: {
+          name: { contains: playerName, mode: 'insensitive' },
+          userId: ctx.user.id
+        }
+      });
     });
   }
-  
+
   return null;
 }
 
@@ -65,84 +68,83 @@ async function findPlayer(ctx: any, params: EditPlayerParams) {
  */
 async function executeEditPlayer(ctx: any, params: EditPlayerParams, t: any) {
   const { updates } = params;
-  
+
   if (!updates || Object.keys(updates).length === 0) {
     await ctx.reply(t('editplayer_no_updates'), { parse_mode: 'HTML' });
     return;
   }
-  
+
   const player = await findPlayer(ctx, params);
   if (!player) {
     await ctx.reply(t('editplayer_player_not_found'), { parse_mode: 'HTML' });
     return;
   }
-  
+
   try {
     // Validate updates using shared helper
     const existingSkills = player.skills as Record<string, any> || {};
     const validation = validatePlayerUpdates(updates, t, existingSkills);
-    
+
     if (!validation.isValid) {
       await ctx.reply(validation.errorMessage!, { parse_mode: 'HTML' });
       return;
     }
-    
+
     const validatedUpdates = validation.validatedUpdates!;
-    
+
     if (Object.keys(validatedUpdates).length === 0) {
       await ctx.reply(t('editplayer_no_valid_updates'), { parse_mode: 'HTML' });
       return;
     }
-    
+
     // Update player
-    const updatedPlayer = await prisma.player.update({
-      where: { id: player.id },
-      data: validatedUpdates
+    const updatedPlayer = await withPrisma(async (prisma) => {
+      return await prisma.player.update({
+        where: { id: player.id },
+        data: validatedUpdates
+      });
     });
-    
+
     // Create action buttons for the updated player (without narration)
     const ab = actionButtons(updatedPlayer, 'player', t, false);
     const message = formatPlayerHtml(updatedPlayer as any, t);
-    
+
     // Show changes made
     const changes = Object.entries(validatedUpdates)
       .map(([key, value]) => `${t(key) || key}: ${value}`)
       .join(', ');
-    
+
     await ctx.reply(
-      `${t('editplayer_success', { name: updatedPlayer.name, changes })}\n\n${message}`, 
-      { 
+      `${t('editplayer_success', { name: updatedPlayer.name, changes })}\n\n${message}`,
+      {
         parse_mode: 'HTML',
-        reply_markup: ab.reply_markup 
+        reply_markup: ab.reply_markup
       }
     );
-    
-    console.log(`✅ Player edited: ${updatedPlayer.name} (${changes})`);
-    
+
   } catch (error) {
-    console.error('[editPlayer] Error updating player:', error);
     await ctx.reply(t('editplayer_error'), { parse_mode: 'HTML' });
   }
 }
 
 export const editPlayerCommand = async (ctx: any) => {
   const [t] = getTranslation(ctx);
-  
+
   // Parse arguments
   const args = ctx.message?.text?.split(' ').slice(1) || [];
-  
+
   // Check for help
   if (args.includes('help') || args.includes('--help') || args.includes('-h')) {
     return await showEditPlayerHelp(ctx, t);
   }
-  
+
   // Try to parse direct command arguments
   const directParams = parseDirectArgs(args);
   if (directParams) {
     // Execute directly if params are provided
     return await executeEditPlayer(ctx, directParams, t);
   }
-  
+
   // Otherwise show menu
   await showEditPlayerMenu(ctx, t);
 };
@@ -154,16 +156,16 @@ async function showEditPlayerHelp(ctx: any, t: any) {
 
 async function showEditPlayerMenu(ctx: any, t: any) {
   const message = buildEditPlayerMenuMessage(t);
-  
+
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback(t('editplayer_start_button'), 'editplayer_start')]
   ]);
-  
+
   const sent = await ctx.reply(message, {
     parse_mode: 'HTML',
     reply_markup: keyboard.reply_markup
   });
-  
+
   SessionManager.initCommand(ctx, {
     stepId: 'editplayer_menu',
     inputType: 'callback',

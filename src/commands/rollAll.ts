@@ -1,6 +1,6 @@
-import { prisma } from '@pathgm/shared/generated/client';
 import { getTranslation, getRollAllHelpMessage, buildRollAllMenuMessage } from '../helpers/commandHelpers';
 import { rollResult } from '../helpers/rollResult';
+import { withPrisma } from '../lib/withPrisma';
 
 interface RollAllParams {
   attribute: string;
@@ -14,20 +14,21 @@ interface RollAllParams {
  */
 function parseDirectArgs(args: string[]): RollAllParams | null {
   if (args.length < 1) return null;
-  
+
   const attribute = args[0];
   const modifier = parseInt(args[1] ?? '0', 10);
-  
+
   return { attribute, modifier };
 }
 
-/**
- * Execute the roll for all players
- */
+
 async function executeRollAll(ctx: any, params: RollAllParams, t: any) {
   const { attribute, modifier } = params;
 
-  const players = await prisma.player.findMany({ where: { userId: ctx.user.id } });
+  const players = await withPrisma(async (prisma) => {
+    return await prisma.player.findMany({ where: { userId: ctx.user.id } });
+  });
+  
   if (players.length === 0) {
     await ctx.reply(t('listplayers_empty'), { parse_mode: 'HTML' });
     return;
@@ -43,7 +44,7 @@ async function executeRollAll(ctx: any, params: RollAllParams, t: any) {
 }
 
 export async function rollAllCommand(ctx: any) {
-  const [t, lang] = getTranslation(ctx);
+  const [t] = getTranslation(ctx);
   const args = ctx.message?.text?.split(' ').slice(1) || [];
 
   // Handle help

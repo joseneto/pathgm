@@ -1,14 +1,12 @@
 import { getUserLang } from '../helpers/getUserLang';
-import { getWebappUrl } from '../config/domainConfig';
 
 export async function helpCommand(ctx: any) {
   const lang = getUserLang(ctx);
-  const docUrl = getWebappUrl();
 
   const textPt = `
 <b>🧙‍♂️ PathGM - Central de Ajuda</b>
 
-📚 <a href="${docUrl}">Clique aqui para abrir a documentação completa</a>
+📚 <a href="https://github.com/joseneto/pathgm">Clique aqui para abrir a documentação completa</a>
 
 🎯 <b>Comandos Essenciais:</b>
 • <code>/menu</code> - Explore todos os recursos disponíveis
@@ -43,7 +41,7 @@ export async function helpCommand(ctx: any) {
   const textEn = `
 <b>🧙‍♂️ PathGM - Help Center</b>
 
-📚 <a href="${docUrl}">Click here to open the complete documentation</a>
+📚 <a href="https://github.com/joseneto/pathgm">Click here to open the complete documentation</a>
 
 🎯 <b>Essential Commands:</b>
 • <code>/menu</code> - Explore all available features

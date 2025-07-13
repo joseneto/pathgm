@@ -1,7 +1,7 @@
 import { getTranslation, getD20HelpMessage } from '../helpers/commandHelpers';
 
 export const d20Command = async (ctx: any) => {
-  const [t, lang] = getTranslation(ctx);
+  const [t] = getTranslation(ctx);
   const args = ctx.message?.text?.split(' ').slice(1) || [];
 
   // Handle help

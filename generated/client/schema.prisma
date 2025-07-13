@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PATHGM_DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  telegramId String   @unique @map("telegram_id")
+  name       String
+  type       UserType
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  players    Player[]
+
+  @@map("users")
+}
+
+model Player {
+  id            String  @id @default(cuid())
+  userId        String  @map("user_id")
+  pathbuilderId String? @map("pathbuilder_id")
+  metadata      Json    @default("{}")
+  name          String
+  alias         String
+  className     String  @map("class_name")
+  level         Int
+
+  perception Int
+  fortitude  Int
+  reflex     Int
+  will       Int
+  skills     Json
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pathbuilderId])
+  @@index([userId])
+  @@map("players")
+}
+
+enum UserType {
+  PRIVATE
+  GROUP
+}

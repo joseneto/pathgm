@@ -1,12 +1,14 @@
 import { Context } from 'telegraf'
-import { prisma } from '@pathgm/shared/generated/client'
 import { getEffectiveTelegramId } from '../helpers/getEffectiveTelegramId';
 import { isGroup } from '../helpers/isGroup';
 import { getTranslation } from '../helpers/commandHelpers';
+import { withPrisma } from '../lib/withPrisma';
 
 export const startCommand = async (ctx: Context) => {
   const telegramId = getEffectiveTelegramId(ctx);
-  const existingUser = await prisma.user.findUnique({ where: { telegramId } })
+  const existingUser = await withPrisma(async (prisma) => {
+    return await prisma.user.findUnique({ where: { telegramId } });
+  });
 
   if (existingUser) {
     const [t] = getTranslation(ctx);
@@ -20,13 +22,15 @@ export const startCommand = async (ctx: Context) => {
   }
 
   const group = isGroup(ctx);
-  const user = await prisma.user.create({
-    data: {
-      telegramId,
-      name: ctx.from?.first_name || 'Adventure',
-      type: group ? 'GROUP' : 'PRIVATE'
-    },
-  })
+  const user = await withPrisma(async (prisma) => {
+    return await prisma.user.create({
+      data: {
+        telegramId,
+        name: ctx.from?.first_name || 'Adventure',
+        type: group ? 'GROUP' : 'PRIVATE'
+      },
+    });
+  });
 
   // Initial credits are now handled by the new credit system via CreditBalance
   const [t] = getTranslation(ctx);

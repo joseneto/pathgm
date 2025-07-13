@@ -1,6 +1,6 @@
-import { prisma } from '@pathgm/shared/generated/client';
 import { getTranslation, getRollHelpMessage, buildRollMenuMessage } from '../helpers/commandHelpers';
 import { rollResult } from '../helpers/rollResult';
+import { withPrisma } from '../lib/withPrisma';
 
 interface RollParams {
   names: string[];
@@ -15,7 +15,7 @@ interface RollParams {
  */
 function parseDirectArgs(args: string[]): RollParams | null {
   if (args.length < 2) return null;
-  
+
   const last = args[args.length - 1];
   const secondLast = args[args.length - 2];
   let attribute = '';
@@ -38,7 +38,7 @@ function parseDirectArgs(args: string[]): RollParams | null {
     .filter(Boolean);
 
   const modifier = parseInt(modifierStr, 10);
-  
+
   return { names, attribute, modifier };
 }
 
@@ -50,24 +50,26 @@ async function executeRoll(ctx: any, params: RollParams, t: any) {
   const results: string[] = [];
 
   for (const name of names) {
-    const player = await prisma.player.findFirst({
-      where: {
-        userId: ctx.user.id,
-        OR: [
-          {
-            name: {
-              contains: name,
-              mode: 'insensitive',
+    const player = await withPrisma(async (prisma) => {
+      return await prisma.player.findFirst({
+        where: {
+          userId: ctx.user.id,
+          OR: [
+            {
+              name: {
+                contains: name,
+                mode: 'insensitive',
+              },
             },
-          },
-          {
-            alias: {
-              contains: name,
-              mode: 'insensitive',
+            {
+              alias: {
+                contains: name,
+                mode: 'insensitive',
+              },
             },
-          },
-        ],
-      },
+          ],
+        },
+      });
     });
 
     if (!player) {
@@ -82,7 +84,7 @@ async function executeRoll(ctx: any, params: RollParams, t: any) {
 }
 
 export async function rollCommand(ctx: any) {
-  const [t, lang] = getTranslation(ctx);
+  const [t] = getTranslation(ctx);
   const args = ctx.message?.text?.match(/".*?"|[^\s]+/g)?.slice(1) || [];
 
   // Handle help

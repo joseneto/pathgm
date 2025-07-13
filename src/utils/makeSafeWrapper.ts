@@ -1,13 +1,12 @@
-import { sendLocalizedMessage } from "../apis/telegram";
 import { getEffectiveUserOrGroup } from "../helpers/getEffectiveUserOrGroup";
-import { isGroup } from "../helpers/isGroup";
-import { prisma } from '@pathgm/shared/generated/client';
 import { Telegraf } from "telegraf";
 import { startCommand } from "../commands/start";
 import { initDynamicCommands } from "../helpers/initDynamicCommands";
+import { getTranslation } from "../helpers/commandHelpers";
 import { SessionManager } from "./SessionManager";
+import { withPrisma } from "../lib/withPrisma";
 
-const allowedInGroups = [
+const allCommands = [
   'start',
   'd20',
   'roll',
@@ -22,32 +21,6 @@ const allowedInGroups = [
   'about',
 ];
 
-const allCommands = [
-  ...allowedInGroups,
-  'gennpc',
-  'gencontextual',
-  'genregion',
-  'genplace',
-  'genplot',
-  'genencounter',
-  'genitem',
-  'genplayer',
-  'addnote',
-  'listnotes',
-  'listnpcs',
-  'listplots',
-  'listregions',
-  'listplaces',
-  'listencounters',
-  'listitems',
-  'credits',
-  'plans',
-  'history',
-  'askrule',
-  'narrate'
-];
-
-// safeWrapper.ts
 export function makeSafeWrapper(bot: Telegraf<any>) {
   return function safeWrapper(handler: (ctx: any) => Promise<void | boolean>) {
     return async (ctx: any) => {
@@ -59,8 +32,8 @@ export function makeSafeWrapper(bot: Telegraf<any>) {
         if (ctx.message) {
           SessionManager.captureMessage(ctx);
         }
-        await check_migrate_chat(ctx);
-
+        await checkMigrateChat(ctx);
+        const [t] = getTranslation(ctx);
         const isActionOrCallback = SessionManager.isExpecting(ctx, 'callback') || SessionManager.isExpecting(ctx, 'text') || ctx.session.paginationEnabled;
 
         const fullCommand = ctx.message?.text?.split(' ')[0] ?? '';
@@ -72,30 +45,20 @@ export function makeSafeWrapper(bot: Telegraf<any>) {
           return;
         }
         if (!isActionOrCallback && !allCommands.includes(command)) {
-          console.log(`Comando não faz parte do bot: ${command}`)
-          //Comando nao é do bot, retornar sem falar nada
+          console.log(`Not a bot command: ${command}`)
           return;
         }
-        if (!isActionOrCallback && isGroup(ctx) && !allowedInGroups.includes(command)) {
-          await sendLocalizedMessage(ctx, 'command_group_blocked', { command });
-          return;
-        }
-
         ctx.user = await getEffectiveUserOrGroup(ctx);
 
         if (!ctx.user && command !== 'start') {
-          await sendLocalizedMessage(ctx, 'user_not_found');
+          await ctx.reply(t('user_not_found'), { parse_mode: 'HTML' });
           return false;
         }
-
-        // NOTE: Credit validation moved to withThinkingMessage for better security
-        // Commands that require credits should use withThinkingMessage wrapper
 
         return await handler(ctx);
       } catch (err: any) {
         const commandText = ctx.message?.text || '';
 
-        // Identifica se é erro de permissão
         const isForbidden =
           err?.response?.error_code === 403 ||
           err?.description?.toLowerCase()?.includes('forbidden') ||
@@ -112,14 +75,13 @@ export function makeSafeWrapper(bot: Telegraf<any>) {
         } else {
           console.warn(`⚠️ Cannot reply to chat (${ctx.chat?.id}) due to forbidden error.`);
         }
-
         return false;
       }
     };
   };
 }
 
-const check_migrate_chat = async (ctx: any) => {
+const checkMigrateChat = async (ctx: any) => {
   const oldChatId = ctx.message?.chat?.id;
   const newChatId = ctx.message?.migrate_to_chat_id;
 
@@ -127,12 +89,12 @@ const check_migrate_chat = async (ctx: any) => {
 
   console.log(`🔄 Grupo migrado: ${oldChatId} → ${newChatId}`);
 
-  const result = await prisma.user.updateMany({
-    where: { telegramId: oldChatId.toString() },
-    data: { telegramId: newChatId.toString() },
+  await withPrisma(async (prisma) => {
+    return await prisma.user.updateMany({
+      where: { telegramId: oldChatId.toString() },
+      data: { telegramId: newChatId.toString() },
+    });
   });
-
-  console.log(`✅ ${result.count} registros atualizados para o novo chatId`);
 };
 
 
