@@ -1,4 +1,3 @@
-import { getUserLang } from '../../helpers/getUserLang';
 import { listHandler } from '../../handlers/pagination/listHandler';
 import { getTranslation } from '../../helpers/commandHelpers';
 
@@ -7,7 +6,6 @@ export async function actionHandler(ctx: any) {
 
   const data = ctx.callbackQuery.data;
 
-  console.log("data actionHandler:", data)
   // Match pattern: entityType_action_actionName_entityId
   const match = data.match(/^([a-z]+)_action_([a-z]+)_(.+)$/);
   if (!match) return false;

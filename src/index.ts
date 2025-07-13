@@ -20,6 +20,7 @@ import { importPlayerCommand } from './commands/importPlayer'
 import { syncPlayersCommand } from './commands/syncPlayers'
 import { newPlayerCommand } from './commands/newPlayer'
 import { editPlayerCommand } from './commands/editPlayer'
+import { listPlayersCommand } from './commands/listPlayers'
 import { aboutCommand } from './commands/about'
 import { helpCommand } from './commands/help'
 
@@ -46,6 +47,7 @@ async function main() {
   bot.command('help', safeWrapper(helpCommand))
   bot.command('newplayer', safeWrapper(newPlayerCommand));
   bot.command('editplayer', safeWrapper(editPlayerCommand))
+  bot.command('listplayers', safeWrapper(listPlayersCommand))
 
   bot.on('message', safeWrapper(handleTextInput))
 

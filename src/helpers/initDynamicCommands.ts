@@ -12,7 +12,6 @@ export async function initDynamicCommands(bot: Telegraf<any>, ctx: any) {
       { command: 'd20', description: t('cmd_d20') },
       { command: 'roll', description: t('cmd_roll') },
       { command: 'rollall', description: t('cmd_rollall') },
-      { command: 'genplayer', description: t('cmd_genplayer') },
       { command: 'newplayer', description: t('cmd_newplayer') },
       { command: 'importplayer', description: t('cmd_importplayer') },
       { command: 'syncplayers', description: t('cmd_syncplayers') },

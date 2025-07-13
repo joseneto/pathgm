@@ -333,3 +333,66 @@ ${t('d20_description')}
 • ${t('tip_great_for_quick_rolls')}
 `.trim();
 }
+
+/**
+ * Help message for /listplayers command
+ */
+export function getListPlayersHelpMessage(t: any): string {
+  return `
+👥 <b>${t('cmd_listplayers')}</b>
+
+${t('listplayers_description')}
+
+<b>${t('usage')}:</b>
+<code>/listplayers [#tags] [--class &lt;class&gt;] [--ancestry &lt;ancestry&gt;] [--level &lt;level&gt;] [--status &lt;status&gt;] [help]</code>
+
+<b>${t('examples')}:</b>
+<code>/listplayers</code> - ${t('list_all_players')}
+<code>/listplayers #tank</code> - ${t('filter_tank_players')}
+<code>/listplayers --class fighter</code> - ${t('filter_fighter_class')}
+<code>/listplayers --ancestry elf --level 5</code> - ${t('filter_elf_level5')}
+<code>/listplayers --status inactive</code> - ${t('filter_inactive_players')}
+<code>/listplayers #healer #cleric --class cleric</code> - ${t('complex_player_filter')}
+
+<b>⚔️ ${t('character_classes')}:</b>
+- <b>fighter:</b> ${t('fighter_class_desc')}
+- <b>wizard:</b> ${t('wizard_class_desc')}
+- <b>cleric:</b> ${t('cleric_class_desc')}
+- <b>rogue:</b> ${t('rogue_class_desc')}
+- <b>ranger:</b> ${t('ranger_class_desc')}
+- <b>barbarian:</b> ${t('barbarian_class_desc')}
+- <b>bard:</b> ${t('bard_class_desc')}
+- <b>sorcerer:</b> ${t('sorcerer_class_desc')}
+
+<b>🧬 ${t('ancestries')}:</b>
+- <b>human:</b> ${t('human_ancestry_desc')}
+- <b>elf:</b> ${t('elf_ancestry_desc')}
+- <b>dwarf:</b> ${t('dwarf_ancestry_desc')}
+- <b>halfling:</b> ${t('halfling_ancestry_desc')}
+- <b>gnome:</b> ${t('gnome_ancestry_desc')}
+- <b>goblin:</b> ${t('goblin_ancestry_desc')}
+
+<b>📊 ${t('player_status')}:</b>
+- <b>active:</b> ${t('active_status_desc')}
+- <b>inactive:</b> ${t('inactive_status_desc')}
+- <b>retired:</b> ${t('retired_status_desc')}
+- <b>dead:</b> ${t('dead_status_desc')}
+
+<b>🔍 ${t('filtering_options')}:</b>
+<b><code>--class &lt;class&gt;</code>:</b> ${t('filter_by_class_desc')}
+<b><code>--ancestry &lt;ancestry&gt;</code>:</b> ${t('filter_by_ancestry_desc')}
+<b><code>--level &lt;1-20&gt;</code>:</b> ${t('filter_by_level_desc')}
+<b><code>--status &lt;status&gt;</code>:</b> ${t('filter_by_status_desc')}
+<b><code>#tags</code>:</b> ${t('filter_by_tags_desc')}
+
+<b>📱 ${t('interface_features')}:</b>
+- ${t('class_and_ancestry')}: ${t('class_and_ancestry_desc')}
+- ${t('level_indicators')}: ${t('level_indicators_desc')}
+- ${t('status_tracking')}: ${t('status_tracking_desc')}
+
+<b>💡 ${t('tips')}:</b>
+- ${t('tip_organize_by_status')}
+- ${t('tip_track_character_progression')}
+- ${t('tip_use_role_tags')}
+`.trim();
+}

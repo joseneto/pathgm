@@ -1,17 +1,14 @@
 import { escapeMarkdown } from '../utils/escapeMarkdown';
-import { getUserLang } from '../helpers/getUserLang';
-import i18next from 'i18next';
 import { isGroup } from '../helpers/isGroup';
+import { getTranslation } from '../helpers/commandHelpers';
 
 export async function menuCommand(ctx: any) {
-  const lang = getUserLang(ctx);
-  const t = i18next.getFixedT(lang);
+  const [t] = getTranslation(ctx);
 
   const allCommands = [
     `🎯 /d20 – ${t('cmd_d20')}`,
     `🎲 /roll – ${t('cmd_roll')}`,
     `🎲 /rollall – ${t('cmd_rollall')}`,
-    `🧙‍♂️ /genplayer – ${t('cmd_genplayer')}`,
     `🧙‍♂️ /newplayer – ${t('cmd_newplayer')}`,
     `📥 /importplayer – ${t('cmd_importplayer')}`,
     `🔄 /syncplayers – ${t('cmd_syncplayers')}`,

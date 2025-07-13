@@ -52,6 +52,6 @@ export async function handleCallbackQuery(ctx: any, safeWrapper: any) {
 
   } catch (error) {
     SessionManager.clearSession(ctx);
-    await ctx.reply('🔄 Erro inesperado. Sessão foi resetada. Tente novamente.');
+    await ctx.reply(t('unexpected_error_session_reset'));
   }
 }
