@@ -210,5 +210,7 @@
   "status_tracking_desc": "Tracks character status",
   "tip_organize_by_status": "Organize characters by their current status",
   "tip_track_character_progression": "Track character progression over time",
-  "tip_use_role_tags": "Use role tags to organize party composition"
+  "tip_use_role_tags": "Use role tags to organize party composition",
+  "cleardata_menu_prompt": "🗑️ Player Data Cleanup",
+  "cleardata_instructions": "⚠️ <b>Warning:</b> This action will permanently remove all your registered characters.\n\n📋 <b>What will be removed:</b>\n• All imported characters\n• All manually created characters\n• Level, skill, and stat data\n• Pathbuilder connections\n\n🔒 <b>What will NOT be removed:</b>\n• Your user profile\n• Bot settings\n\n⚠️ This action cannot be undone!"
 }
