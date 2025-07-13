@@ -16,7 +16,7 @@
     "declaration": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": ["jest", "node"]
+    "types": ["node"]
   },
   "include": [
     "src/**/*.ts",
@@ -24,5 +24,6 @@
   "exclude": [
     "node_modules",
     "dist",
+    "src/tests"
   ]
 }
