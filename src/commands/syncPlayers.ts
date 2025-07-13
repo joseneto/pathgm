@@ -3,7 +3,7 @@ import { getTranslation } from '../helpers/commandHelpers';
 import { parsePathbuilderCharacter } from '../helpers/parsePathbuilderCharacter';
 import { Markup } from 'telegraf';
 import { handleSyncPlayersInput } from '../handlers/text/handleSyncPlayersInput';
-import { SessionManager } from 'src/utils/SessionManager';
+import { SessionManager } from '../utils/SessionManager';
 import { withPrisma } from '../lib/withPrisma';
 
 async function executeSyncPlayers(ctx: any, t: any) {

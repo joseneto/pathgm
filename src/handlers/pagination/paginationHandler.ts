@@ -53,7 +53,6 @@ export async function paginationHandler(ctx: any) {
 
   if (action === 'item') {
     const { formated, item } = await handler.getItemDetails(value, t);
-      console.log(`📋 Showing details with action buttons for ${baseCallback}: ${item.name || item.title} (ID: ${item.id})`);
       const actionButtons = handler.createActionButtons(item, t);
       await ctx.reply(formated, {
         parse_mode: 'HTML',

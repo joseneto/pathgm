@@ -2,7 +2,7 @@ import { executeEditPlayer } from '../../commands/editPlayer';
 import { isCancelInput } from '../../helpers/isCancelInput';
 import { parseAttributeUpdates } from '../../helpers/playerAttributeParser';
 import { getTranslation } from '../../helpers/commandHelpers';
-import { SessionManager } from 'src/utils/SessionManager';
+import { SessionManager } from '../../utils/SessionManager';
 
 export const handleEditPlayerInput = async (ctx: any): Promise<boolean> => {
   const [t] = getTranslation(ctx);

@@ -29,7 +29,6 @@ export async function handleCallbackQuery(ctx: any, safeWrapper: any) {
 
       // Handle delete confirmations
       if (data.startsWith('confirm_delete_') || data === 'cancel_delete') {
-        console.log('handleCallbackQuery: Using delete confirmation handler');
         await safeWrapper(handleDeleteConfirmation)(ctx);
         return;
       }

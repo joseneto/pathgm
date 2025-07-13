@@ -87,8 +87,6 @@ const checkMigrateChat = async (ctx: any) => {
 
   if (!oldChatId || !newChatId || oldChatId === newChatId) return;
 
-  console.log(`🔄 Grupo migrado: ${oldChatId} → ${newChatId}`);
-
   await withPrisma(async (prisma) => {
     return await prisma.user.updateMany({
       where: { telegramId: oldChatId.toString() },
