@@ -163,7 +163,7 @@ ${t('or_use_menu', { command: 'editplayer' }) || 'Or use /editplayer without par
  * Menu message for /cleardata command
  */
 export function buildClearDataMenuMessage(t: any): string {
-  return `${t('cleardata_menu_prompt')}\n\n${t('cleardata_instructions')}\n\n${t('quick_commands')}:\n<code>/cleardata all</code>\n<code>`;
+  return `${t('cleardata_menu_prompt')}\n\n${t('cleardata_instructions')}`;
 }
 
 /**
