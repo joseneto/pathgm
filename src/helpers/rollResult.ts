@@ -1,6 +1,6 @@
-import { TFunction } from "i18next";
-import { escapeMarkdown } from "../utils/escapeMarkdown";
-import { Player } from "generated/client";
+import { TFunction } from 'i18next';
+import { escapeMarkdown } from '../utils/escapeMarkdown';
+import { Player } from 'generated/client';
 
 function rollDie(sides: number): number {
   return Math.floor(Math.random() * sides) + 1;
@@ -11,7 +11,7 @@ export function rollResult(
   inputAttribute: string,
   modifier: number,
   results: string[],
-  t: TFunction<"translation", undefined>
+  t: TFunction<'translation', undefined>,
 ) {
   const saveFields = ['perception', 'fortitude', 'reflex', 'will'] as const;
   type SaveField = (typeof saveFields)[number];
@@ -38,7 +38,7 @@ export function rollResult(
         die,
         base: loreValue,
         modDisplay,
-        total
+        total,
       }));
     }
 
@@ -54,7 +54,7 @@ export function rollResult(
     if (base === 0 && !(attribute in skills)) {
       results.push(t('roll_attribute_not_found', {
         attribute,
-        name: player.name
+        name: player.name,
       }));
       return;
     }
@@ -71,7 +71,7 @@ export function rollResult(
     die,
     base,
     modDisplay,
-    total
+    total,
   }));
 }
 

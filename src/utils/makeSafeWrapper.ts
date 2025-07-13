@@ -1,10 +1,10 @@
-import { getEffectiveUserOrGroup } from "../helpers/getEffectiveUserOrGroup";
-import { Telegraf } from "telegraf";
-import { startCommand } from "../commands/start";
-import { initDynamicCommands } from "../helpers/initDynamicCommands";
-import { getTranslation } from "../helpers/commandHelpers";
-import { SessionManager } from "./SessionManager";
-import { withPrisma } from "../lib/withPrisma";
+import { getEffectiveUserOrGroup } from '../helpers/getEffectiveUserOrGroup';
+import { Telegraf } from 'telegraf';
+import { startCommand } from '../commands/start';
+import { initDynamicCommands } from '../helpers/initDynamicCommands';
+import { getTranslation } from '../helpers/commandHelpers';
+import { SessionManager } from './SessionManager';
+import { withPrisma } from '../lib/withPrisma';
 
 const allCommands = [
   'start',
@@ -22,7 +22,7 @@ const allCommands = [
 ];
 
 export function makeSafeWrapper(bot: Telegraf<any>) {
-  return function safeWrapper(handler: (ctx: any) => Promise<void | boolean>) {
+  return function safeWrapper(handler: (_ctx: any) => Promise<void | boolean>) {
     return async (ctx: any) => {
       try {
         ctx.session ??= {};
@@ -40,12 +40,12 @@ export function makeSafeWrapper(bot: Telegraf<any>) {
         const command = fullCommand.startsWith('/') ? fullCommand.slice(1).split('@')[0] : '';
 
         if ((!isActionOrCallback && fullCommand === '/') || command === 'start') {
-          await startCommand(ctx)
+          await startCommand(ctx);
           await initDynamicCommands(bot, ctx);
           return;
         }
         if (!isActionOrCallback && !allCommands.includes(command)) {
-          console.log(`Not a bot command: ${command}`)
+          console.log(`Not a bot command: ${command}`);
           return;
         }
         ctx.user = await getEffectiveUserOrGroup(ctx);
@@ -96,5 +96,4 @@ const checkMigrateChat = async (ctx: any) => {
     });
   });
 };
-
 

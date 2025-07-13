@@ -46,7 +46,7 @@ async function executeNewPlayer(ctx: any, params: NewPlayerParams, t: any) {
   }
 
   // Start with default values
-  let playerData = {
+  const playerData = {
     name,
     alias: name,
     className,
@@ -55,7 +55,7 @@ async function executeNewPlayer(ctx: any, params: NewPlayerParams, t: any) {
     fortitude: 0,
     reflex: 0,
     will: 0,
-    skills: createDefaultSkills()
+    skills: createDefaultSkills(),
   };
 
   // Apply additional attributes if provided
@@ -78,8 +78,8 @@ async function executeNewPlayer(ctx: any, params: NewPlayerParams, t: any) {
       return await prisma.player.create({
         data: {
           userId: ctx.user.id,
-          ...playerData
-        }
+          ...playerData,
+        },
       });
     });
 
@@ -89,9 +89,9 @@ async function executeNewPlayer(ctx: any, params: NewPlayerParams, t: any) {
 
     await ctx.reply(message, {
       parse_mode: 'HTML',
-      reply_markup: ab.reply_markup
+      reply_markup: ab.reply_markup,
     });
-  } catch (error) {
+  } catch {
     await ctx.reply(t('createplayer_error'), { parse_mode: 'HTML' });
   }
 }
@@ -127,12 +127,12 @@ async function showNewPlayerMenu(ctx: any, t: any) {
   const message = buildNewPlayerMenuMessage(t);
 
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(t('newplayer_start_button'), 'newplayer_start')]
+    [Markup.button.callback(t('newplayer_start_button'), 'newplayer_start')],
   ]);
 
   const sent = await ctx.reply(message, {
     parse_mode: 'HTML',
-    reply_markup: keyboard.reply_markup
+    reply_markup: keyboard.reply_markup,
   });
 
   SessionManager.initCommand(ctx, {
@@ -140,7 +140,7 @@ async function showNewPlayerMenu(ctx: any, t: any) {
     inputType: 'callback',
     lastMessageId: sent.message_id,
     params: {},
-    handler: handleNewPlayerInput
+    handler: handleNewPlayerInput,
   });
 }
 

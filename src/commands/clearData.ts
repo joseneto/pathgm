@@ -47,7 +47,7 @@ async function executeClearData(ctx: any, t: any) {
     } else {
       await ctx.reply(t('cleardata_no_data'), { parse_mode: 'HTML' });
     }
-  } catch (error) {
+  } catch {
     await ctx.reply(t('cleardata_error'), { parse_mode: 'HTML' });
   }
 }
@@ -88,7 +88,7 @@ async function showClearDataMenu(ctx: any, t: any) {
 
   const sent = await ctx.reply(message, {
     parse_mode: 'HTML',
-    reply_markup: keyboard.reply_markup
+    reply_markup: keyboard.reply_markup,
   });
 
   SessionManager.initCommand(ctx, {
@@ -96,7 +96,7 @@ async function showClearDataMenu(ctx: any, t: any) {
     inputType: 'callback',
     lastMessageId: sent.message_id,
     params: {},
-    handler: handleClearData
+    handler: handleClearData,
   });
 }
 

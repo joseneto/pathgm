@@ -33,24 +33,24 @@ export function capitalizeName(name: string): string {
 
   // Words that should remain lowercase (unless they're the first word)
   const lowercaseWords = ['of', 'the', 'and', 'in', 'on', 'at', 'to', 'for', 'with', 'by'];
-  
+
   return name
     .split(' ')
     .map((word, index) => {
       if (word.length === 0) return word;
-      
+
       const lowerWord = word.toLowerCase();
-      
+
       // First word is always capitalized
       if (index === 0) {
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
       }
-      
+
       // Keep certain words lowercase
       if (lowercaseWords.includes(lowerWord)) {
         return lowerWord;
       }
-      
+
       // Capitalize other words
       return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
     })

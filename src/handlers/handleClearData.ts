@@ -1,5 +1,5 @@
 import { SessionManager } from '../utils/SessionManager';
-import { executeClearData } from '../commands/clearData'
+import { executeClearData } from '../commands/clearData';
 import { getTranslation } from '../helpers/commandHelpers';
 
 export async function handleClearData(ctx: any) {
@@ -7,14 +7,12 @@ export async function handleClearData(ctx: any) {
   if (!buttonData?.startsWith('clear_')) return false;
 
   const [t] = getTranslation(ctx);
-  let entities: string[] = [];
 
   switch (buttonData) {
-    case 'clear_all':
-      entities = ['players'];
-      break;
-    default:
-      return false;
+  case 'clear_all':
+    break;
+  default:
+    return false;
   }
 
   await ctx.answerCbQuery(); // remove loading
@@ -22,7 +20,7 @@ export async function handleClearData(ctx: any) {
   // Delete the menu message
   try {
     await ctx.deleteMessage();
-  } catch (error) {
+  } catch {
     console.log('Could not delete menu message');
   }
 

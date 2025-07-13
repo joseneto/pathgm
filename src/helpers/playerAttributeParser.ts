@@ -3,7 +3,7 @@
 export const VALID_SKILLS = [
   'acrobatics', 'arcana', 'athletics', 'crafting', 'deception', 'diplomacy',
   'intimidation', 'medicine', 'nature', 'occultism', 'performance', 'religion',
-  'society', 'stealth', 'survival', 'thievery'
+  'society', 'stealth', 'survival', 'thievery',
 ];
 
 export interface PlayerAttributeUpdates {
@@ -62,72 +62,72 @@ export function parseAttributeUpdates(args: string[]): PlayerAttributeUpdates {
 export function validatePlayerUpdates(
   updates: PlayerAttributeUpdates,
   t: any,
-  existingSkills?: Record<string, any>
+  existingSkills?: Record<string, any>,
 ): { isValid: boolean; validatedUpdates?: any; errorMessage?: string } {
   const validatedUpdates: any = {};
 
   for (const [key, value] of Object.entries(updates)) {
     switch (key) {
-      case 'name':
-      case 'alias':
-      case 'className':
-        if (typeof value === 'string' && value.length > 0) {
-          validatedUpdates[key] = value;
-        }
-        break;
-      case 'level':
-        if (typeof value === 'number' && value >= 1 && value <= 20) {
-          validatedUpdates[key] = value;
-        } else {
-          return {
-            isValid: false,
-            errorMessage: t('editplayer_invalid_level', { value })
-          };
-        }
-        break;
-      case 'perception':
-      case 'fortitude':
-      case 'reflex':
-      case 'will':
-        if (typeof value === 'number' && value >= -10 && value <= 50) {
-          validatedUpdates[key] = value;
-        } else {
-          return {
-            isValid: false,
-            errorMessage: t('editplayer_invalid_stat', { key, value })
-          };
-        }
-        break;
-      case 'skills':
-        if (typeof value === 'object' && value !== null) {
-          const currentSkills = existingSkills || {};
-          const updatedSkills = { ...currentSkills };
-
-          for (const [skillName, skillValue] of Object.entries(value)) {
-            if (isSkillName(skillName) && typeof skillValue === 'number' && skillValue >= -10 && skillValue <= 50) {
-              updatedSkills[skillName] = skillValue;
-            } else {
-              return {
-                isValid: false,
-                errorMessage: t('editplayer_invalid_skill', { skill: skillName, value: skillValue })
-              };
-            }
-          }
-
-          validatedUpdates[key] = updatedSkills;
-        }
-        break;
-      default:
+    case 'name':
+    case 'alias':
+    case 'className':
+      if (typeof value === 'string' && value.length > 0) {
+        validatedUpdates[key] = value;
+      }
+      break;
+    case 'level':
+      if (typeof value === 'number' && value >= 1 && value <= 20) {
+        validatedUpdates[key] = value;
+      } else {
         return {
           isValid: false,
-          errorMessage: t('editplayer_invalid_attribute', { key })
+          errorMessage: t('editplayer_invalid_level', { value }),
         };
+      }
+      break;
+    case 'perception':
+    case 'fortitude':
+    case 'reflex':
+    case 'will':
+      if (typeof value === 'number' && value >= -10 && value <= 50) {
+        validatedUpdates[key] = value;
+      } else {
+        return {
+          isValid: false,
+          errorMessage: t('editplayer_invalid_stat', { key, value }),
+        };
+      }
+      break;
+    case 'skills':
+      if (typeof value === 'object' && value !== null) {
+        const currentSkills = existingSkills || {};
+        const updatedSkills = { ...currentSkills };
+
+        for (const [skillName, skillValue] of Object.entries(value)) {
+          if (isSkillName(skillName) && typeof skillValue === 'number' && skillValue >= -10 && skillValue <= 50) {
+            updatedSkills[skillName] = skillValue;
+          } else {
+            return {
+              isValid: false,
+              errorMessage: t('editplayer_invalid_skill', { skill: skillName, value: skillValue }),
+            };
+          }
+        }
+
+        validatedUpdates[key] = updatedSkills;
+      }
+      break;
+    default:
+      return {
+        isValid: false,
+        errorMessage: t('editplayer_invalid_attribute', { key }),
+      };
     }
   }
 
   return {
     isValid: true,
-    validatedUpdates
+    validatedUpdates,
   };
 }
 

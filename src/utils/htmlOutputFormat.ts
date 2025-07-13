@@ -1,4 +1,4 @@
-import { TFunction } from "i18next";
+import { TFunction } from 'i18next';
 
 export function formatPlayerHtml(player: {
   name: string;

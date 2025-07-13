@@ -6,7 +6,7 @@ export interface SessionContext {
   messageText?: string;
   messageId?: number;
   params?: any;
-  handler?: (ctx: any, input?: any) => Promise<boolean>;
+  handler?: (_ctx: any, _input?: any) => Promise<boolean>;
 }
 
 export class SessionManager {
@@ -62,13 +62,12 @@ export class SessionManager {
     }
   }
 
-
   static initCommand(ctx: any, options: {
     stepId: string;
     inputType: 'text' | 'callback';
     lastMessageId?: number;
     params?: any;
-    handler?: (ctx: any, input?: any) => Promise<boolean>;
+    handler?: (_ctx: any, _input?: any) => Promise<boolean>;
   }) {
     if (!this.validateSession(ctx)) {
       ctx.session = {};
@@ -100,7 +99,7 @@ export class SessionManager {
     const sessionContext: SessionContext = {
       stepId: callbackType,
       inputType: 'callback',
-      params: data
+      params: data,
     };
 
     ctx.session.currentContext = sessionContext;
@@ -119,7 +118,7 @@ export class SessionManager {
 
     current.params = {
       ...current.params,
-      ...newParams
+      ...newParams,
     };
   }
 

@@ -39,8 +39,8 @@ export function generateInteractiveListMarkup({
     buttons.push([
       {
         text: displayText,
-        callback_data: `${baseCallback}_item_${item.callbackId}`
-      }
+        callback_data: `${baseCallback}_item_${item.callbackId}`,
+      },
     ]);
   });
 
@@ -55,8 +55,8 @@ export function generateInteractiveListMarkup({
   // Page indicator with total count
   if (totalPages > 1) {
     navRow.push({
-      text: `📄 ${page + 1}/${totalPages} (${totalCount} total)`, 
-      callback_data: `${baseCallback}_page_${page}` // Current page (no action)
+      text: `📄 ${page + 1}/${totalPages} (${totalCount} total)`,
+      callback_data: `${baseCallback}_page_${page}`, // Current page (no action)
     });
   }
 

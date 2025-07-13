@@ -37,16 +37,16 @@ function getDexPenaltyFromArmor(armor: any[]): number {
 
   const wornArmor = armor.find((a) =>
     a.worn === true &&
-    ['light', 'medium', 'heavy'].includes(a.prof)
+    ['light', 'medium', 'heavy'].includes(a.prof),
   );
 
   if (!wornArmor) return 0;
 
   switch (wornArmor.prof) {
-    case 'light': return 1;
-    case 'medium': return 2;
-    case 'heavy': return 3;
-    default: return 0;
+  case 'light': return 1;
+  case 'medium': return 2;
+  case 'heavy': return 3;
+  default: return 0;
   }
 }
 

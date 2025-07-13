@@ -45,8 +45,8 @@ async function findPlayer(ctx: any, params: EditPlayerParams) {
       return await prisma.player.findFirst({
         where: {
           id: playerId,
-          userId: ctx.user.id
-        }
+          userId: ctx.user.id,
+        },
       });
     });
   } else if (playerName) {
@@ -54,8 +54,8 @@ async function findPlayer(ctx: any, params: EditPlayerParams) {
       return await prisma.player.findFirst({
         where: {
           name: { contains: playerName, mode: 'insensitive' },
-          userId: ctx.user.id
-        }
+          userId: ctx.user.id,
+        },
       });
     });
   }
@@ -101,7 +101,7 @@ async function executeEditPlayer(ctx: any, params: EditPlayerParams, t: any) {
     const updatedPlayer = await withPrisma(async (prisma) => {
       return await prisma.player.update({
         where: { id: player.id },
-        data: validatedUpdates
+        data: validatedUpdates,
       });
     });
 
@@ -118,11 +118,11 @@ async function executeEditPlayer(ctx: any, params: EditPlayerParams, t: any) {
       `${t('editplayer_success', { name: updatedPlayer.name, changes })}\n\n${message}`,
       {
         parse_mode: 'HTML',
-        reply_markup: ab.reply_markup
-      }
+        reply_markup: ab.reply_markup,
+      },
     );
 
-  } catch (error) {
+  } catch {
     await ctx.reply(t('editplayer_error'), { parse_mode: 'HTML' });
   }
 }
@@ -158,12 +158,12 @@ async function showEditPlayerMenu(ctx: any, t: any) {
   const message = buildEditPlayerMenuMessage(t);
 
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(t('editplayer_start_button'), 'editplayer_start')]
+    [Markup.button.callback(t('editplayer_start_button'), 'editplayer_start')],
   ]);
 
   const sent = await ctx.reply(message, {
     parse_mode: 'HTML',
-    reply_markup: keyboard.reply_markup
+    reply_markup: keyboard.reply_markup,
   });
 
   SessionManager.initCommand(ctx, {
@@ -171,7 +171,7 @@ async function showEditPlayerMenu(ctx: any, t: any) {
     inputType: 'callback',
     lastMessageId: sent.message_id,
     params: {},
-    handler: handleEditPlayerInput
+    handler: handleEditPlayerInput,
   });
 }
 

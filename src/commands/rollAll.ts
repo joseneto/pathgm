@@ -21,14 +21,13 @@ function parseDirectArgs(args: string[]): RollAllParams | null {
   return { attribute, modifier };
 }
 
-
 async function executeRollAll(ctx: any, params: RollAllParams, t: any) {
   const { attribute, modifier } = params;
 
   const players = await withPrisma(async (prisma) => {
     return await prisma.player.findMany({ where: { userId: ctx.user.id } });
   });
-  
+
   if (players.length === 0) {
     await ctx.reply(t('listplayers_empty'), { parse_mode: 'HTML' });
     return;

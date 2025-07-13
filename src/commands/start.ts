@@ -1,4 +1,4 @@
-import { Context } from 'telegraf'
+import { Context } from 'telegraf';
 import { getEffectiveTelegramId } from '../helpers/getEffectiveTelegramId';
 import { isGroup } from '../helpers/isGroup';
 import { getTranslation } from '../helpers/commandHelpers';
@@ -18,7 +18,7 @@ export const startCommand = async (ctx: Context) => {
     } else {
       await ctx.reply(t('welcome_back', { name: existingUser.name! }), { parse_mode: 'HTML' });
     }
-    return
+    return;
   }
 
   const group = isGroup(ctx);
@@ -27,7 +27,7 @@ export const startCommand = async (ctx: Context) => {
       data: {
         telegramId,
         name: ctx.from?.first_name || 'Adventure',
-        type: group ? 'GROUP' : 'PRIVATE'
+        type: group ? 'GROUP' : 'PRIVATE',
       },
     });
   });
@@ -39,4 +39,4 @@ export const startCommand = async (ctx: Context) => {
   } else {
     await ctx.reply(t('welcome', { name: user.name! }), { parse_mode: 'HTML' });
   }
-}
+};

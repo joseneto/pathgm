@@ -44,7 +44,7 @@ function extractPathbuilderId(input: string): string | null {
  */
 async function executeImportPlayer(ctx: any, input: string, t: any) {
   const id = extractPathbuilderId(input);
-  
+
   if (!id) {
     await ctx.reply(t('addplayer_invalid_link'), { parse_mode: 'HTML' });
     return;
@@ -90,9 +90,9 @@ async function executeImportPlayer(ctx: any, input: string, t: any) {
 
     await ctx.reply(message, {
       parse_mode: 'HTML',
-      reply_markup: ab.reply_markup
+      reply_markup: ab.reply_markup,
     });
-  } catch (err) {
+  } catch {
     await ctx.reply(t('addplayer_error'), { parse_mode: 'HTML' });
   }
 }
@@ -128,12 +128,12 @@ async function showImportPlayerMenu(ctx: any, t: any) {
   const message = buildImportPlayerMenuMessage(t);
 
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(t('import_player_start_button'), 'import_player_start')]
+    [Markup.button.callback(t('import_player_start_button'), 'import_player_start')],
   ]);
 
   const sent = await ctx.reply(message, {
     parse_mode: 'HTML',
-    reply_markup: keyboard.reply_markup
+    reply_markup: keyboard.reply_markup,
   });
 
   SessionManager.initCommand(ctx, {
@@ -141,7 +141,7 @@ async function showImportPlayerMenu(ctx: any, t: any) {
     inputType: 'callback',
     lastMessageId: sent.message_id,
     params: {},
-    handler: handleImportPlayerInput
+    handler: handleImportPlayerInput,
   });
 }
 

@@ -49,8 +49,7 @@ export async function handleCallbackQuery(ctx: any, safeWrapper: any) {
     console.warn('handleCallbackQuery: No valid context found for callback:', data);
     await ctx.reply(t('callback_invalid'), { parse_mode: 'HTML' });
 
-
-  } catch (error) {
+  } catch {
     SessionManager.clearSession(ctx);
     await ctx.reply(t('unexpected_error_session_reset'));
   }

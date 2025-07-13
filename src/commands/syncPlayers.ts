@@ -49,7 +49,7 @@ async function executeSyncPlayers(ctx: any, t: any) {
 
       updated.push(`✅ ${parsed.name} (${parsed.className} ${parsed.level})`);
 
-    } catch (err) {
+    } catch {
       updated.push(`❌ ${player.name} — ${t('sync_failed_connection')}`);
     }
   }
@@ -76,12 +76,12 @@ async function showSyncPlayersMenu(ctx: any, t: any) {
   const message = t('sync_players_menu_message');
 
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(t('sync_players_start_button'), 'sync_players_start')]
+    [Markup.button.callback(t('sync_players_start_button'), 'sync_players_start')],
   ]);
 
   const sent = await ctx.reply(message, {
     parse_mode: 'HTML',
-    reply_markup: keyboard.reply_markup
+    reply_markup: keyboard.reply_markup,
   });
 
   SessionManager.initCommand(ctx, {
@@ -89,7 +89,7 @@ async function showSyncPlayersMenu(ctx: any, t: any) {
     inputType: 'callback',
     lastMessageId: sent.message_id,
     params: {},
-    handler: handleSyncPlayersInput
+    handler: handleSyncPlayersInput,
   });
 }
 

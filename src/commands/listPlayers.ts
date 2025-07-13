@@ -77,14 +77,14 @@ export async function listPlayersCommand(ctx: any) {
   ctx.session.levelFilter = levelFilter;
   ctx.session.statusFilter = statusFilter;
 
-  const { items, totalCount, searchInfo } = await listHandler.listplayers.getItems(
+  const { items, totalCount } = await listHandler.listplayers.getItems(
     ctx.user.id,
     0,
     6,
     classFilter,
     ancestryFilter,
     levelFilter,
-    statusFilter
+    statusFilter,
   );
 
   if (totalCount === 0) {

@@ -10,7 +10,7 @@ async function getPrisma(): Promise<PrismaClient> {
   return cachedPrisma;
 }
 
-export async function withPrisma<T>(fn: (prisma: PrismaClient) => Promise<T>): Promise<T> {
+export async function withPrisma<T>(fn: (_prisma: PrismaClient) => Promise<T>): Promise<T> {
   const prisma = await getPrisma();
   return fn(prisma);
 }
