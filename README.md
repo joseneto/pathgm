@@ -4,6 +4,10 @@
 
 PathGM Bot transforms your Telegram into a simple Pathfinder 2e game management hub. Seamlessly import characters from Pathbuilder, manage your party, and roll dice with style - all within your favorite messaging platform.
 
+## 🚀 Try it Now!
+
+**[➡️ Start using PathGM Bot on Telegram](https://t.me/PathGM_Bot)**
+
 <div align="center">
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
