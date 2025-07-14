@@ -24,6 +24,7 @@ import { editPlayerCommand } from './commands/editPlayer'
 import { listPlayersCommand } from './commands/listPlayers'
 import { aboutCommand } from './commands/about'
 import { helpCommand } from './commands/help'
+import { admstatsCommand } from './commands/admstats'
 import { PlayerCleanupService } from './services/playerCleanup'
 
 async function main() {
@@ -50,6 +51,7 @@ async function main() {
   bot.command('newplayer', safeWrapper(newPlayerCommand));
   bot.command('editplayer', safeWrapper(editPlayerCommand))
   bot.command('listplayers', safeWrapper(listPlayersCommand))
+  bot.command('admstats', admstatsCommand)
 
   bot.on('message', safeWrapper(handleTextInput))
 
