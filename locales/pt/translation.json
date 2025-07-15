@@ -216,6 +216,7 @@
   "cleardata_instructions": "⚠️ <b>Atenção:</b> Esta ação removerá permanentemente todos os seus personagens cadastrados.\n\n📋 <b>O que será removido:</b>\n• Todos os personagens importados\n• Todos os personagens criados manualmente\n• Dados de níveis, perícias e estatísticas\n• Conexões com Pathbuilder\n\n🔒 <b>O que NÃO será removido:</b>\n• Seu perfil de usuário\n• Configurações do bot\n\n⚠️ Esta ação não pode ser desfeita!",
   "try_listplayers_help": "Use /listplayers -h para ver opções de filtro",
   "cmd_cleardata": "Limpar dados dos jogadores",
+  "cmd_start": "Iniciar bot",
   "cleardata_success_summary": "✅ Dados removidos com sucesso: {{summary}}",
   "cleardata_no_data": "ℹ️ Nenhum dado encontrado para remover.",
   "cleardata_error": "❌ Erro ao remover dados. Tente novamente.",

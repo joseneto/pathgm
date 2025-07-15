@@ -6,6 +6,7 @@ export async function menuCommand(ctx: any) {
   const [t] = getTranslation(ctx);
 
   const allCommands = [
+    `🚀 /pathgm – ${t('cmd_start')}`,
     `🎯 /d20 – ${t('cmd_d20')}`,
     `🎲 /roll – ${t('cmd_roll')}`,
     `🎲 /rollall – ${t('cmd_rollall')}`,

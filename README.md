@@ -84,7 +84,7 @@ PathGM Bot transforms your Telegram into a simple Pathfinder 2e game management 
 
 ### Basic Commands
 
-- `/start` - Initialize the bot and get started
+- `/pathgm` - Initialize the bot and get started (alias for /start)
 - `/help` - Show available commands and features
 - `/menu` - Access the main interactive menu
 
@@ -105,6 +105,7 @@ PathGM Bot transforms your Telegram into a simple Pathfinder 2e game management 
 ### Management Commands
 
 - `/cleardata all` - Clear all character data
+- `/admstats` - Display bot statistics (admin only)
 - `/about` - Bot information and credits
 
 ## 🏗️ Architecture

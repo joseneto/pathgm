@@ -52,6 +52,10 @@ async function main() {
   bot.command('editplayer', safeWrapper(editPlayerCommand))
   bot.command('listplayers', safeWrapper(listPlayersCommand))
   bot.command('admstats', admstatsCommand)
+  bot.command('pathgm', safeWrapper(async (ctx) => {
+    await initDynamicCommands(bot, ctx);
+    await startCommand(ctx);
+  }));
 
   bot.on('message', safeWrapper(handleTextInput))
 

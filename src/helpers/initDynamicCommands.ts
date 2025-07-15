@@ -9,6 +9,7 @@ export async function initDynamicCommands(bot: Telegraf<any>, ctx: any) {
   for (const forceLang of languages) {
     const t = i18next.getFixedT(forceLang);
     const commands = [
+      { command: 'pathgm', description: t('cmd_start') },
       { command: 'd20', description: t('cmd_d20') },
       { command: 'roll', description: t('cmd_roll') },
       { command: 'rollall', description: t('cmd_rollall') },

@@ -9,6 +9,7 @@ export async function helpCommand(ctx: any) {
 📚 <a href="https://github.com/joseneto/pathgm">Clique aqui para abrir a documentação completa</a>
 
 🎯 <b>Comandos Principais:</b>
+• <code>/pathgm</code> - Iniciar o bot (alias para /start)
 • <code>/menu</code> - Explore todos os recursos disponíveis
 • <code>/comando -h</code> - Ajuda específica para qualquer comando
 
@@ -36,6 +37,7 @@ PathGM é um bot focado em ferramentas essenciais: rolagem de dados e importaç�
 📚 <a href="https://github.com/joseneto/pathgm">Click here to open the complete documentation</a>
 
 🎯 <b>Main Commands:</b>
+• <code>/pathgm</code> - Start the bot (alias for /start)
 • <code>/menu</code> - Explore all available features
 • <code>/command -h</code> - Specific help for any command
 

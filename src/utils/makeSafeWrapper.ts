@@ -8,6 +8,7 @@ import { withPrisma } from '../lib/withPrisma';
 
 const allCommands = [
   'start',
+  'pathgm',
   'd20',
   'roll',
   'rollall',
